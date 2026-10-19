@@ -68,3 +68,9 @@ Copy-Item "$env:LOCALAPPDATA\Programs\Wiffer\Wiffer.lnk" ([Environment]::GetFold
 ```
 
 Keep the installed directory together. The shortcut targets its absolute executable path and embedded icon; moving the shortcut is supported, moving the installation requires recreating it.
+
+## Publication verification
+
+Published successfully to the public repository and v0.6.0 release linked above. Unauthenticated GitHub API access reports `private: false` and default branch `main`. The public 66,121,535-byte ZIP was downloaded without authentication and its SHA-256 matched the local archive. Both public PNGs match the visually inspected captures byte-for-byte; GitHub's rendered README contains the screenshot and direct download links. The release includes SHA256SUMS.txt.
+
+The release source commit is `16facca`; local prior-development preservation commit is `ce547a0` on `codex/m0`, which was not pushed. Public source ancestry contains no earlier private history. This verification note is a documentation-only follow-up on `codex/m06-public`, pushed to `origin/main`. The working tree is clean after that commit. The app is left closed; the stable installed executable and shortcut are ready to launch.

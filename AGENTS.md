@@ -15,3 +15,4 @@ M0.6 rebrands and redesigns the verified M0.5 pipeline as Wiffer. This is a loca
 - Update AGENTS.md, ARCHITECTURE.md and HANDOFF.md with observed validation and limitations. Keep performance claims tied to actual measurements; browser frame callbacks are not GPU present events. Do not push without explicit authorization.
 
 M0.6 preserves Core project paths and measurement semantics. Publishing this release is explicitly authorized. Keep old local evidence and machine-specific shortcuts out of the public tree. See HANDOFF.md for validation and limitations.
+Observed M0.6 validation: 46 native and 12 frontend tests pass; TypeScript, production build, Release build and x64 publish pass. Real WebView2 checks pass at 1366×768 and 1920×1080. Publication and downloaded-asset checksum are verified. See HANDOFF.md for timing data and unvalidated physical-network/high-DPI/second-PC scenarios; do not infer guarantees from these checks.
