@@ -1,0 +1,115 @@
+{
+  "checks": [
+    "pause freezes probes/traffic/clock/statistics",
+    "reset preserves pause and clears probes",
+    "resume receives native samples",
+    "all six imported summaries retained",
+    "duplicate targets rejected",
+    "shared windows/expansion preserve six ECharts instances",
+    "no horizontal overflow; six charts fit both tested viewports"
+  ],
+  "layouts": [
+    {
+      "width": 1366,
+      "height": 768,
+      "scrollWidth": 1351,
+      "chartBottom": 741,
+      "canvasCount": 6,
+      "chartSizes": [
+        {
+          "width": 424,
+          "height": 86
+        },
+        {
+          "width": 424,
+          "height": 86
+        },
+        {
+          "width": 424,
+          "height": 86
+        },
+        {
+          "width": 424,
+          "height": 86
+        },
+        {
+          "width": 424,
+          "height": 86
+        },
+        {
+          "width": 424,
+          "height": 86
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "scrollWidth": 1905,
+      "chartBottom": 1002,
+      "canvasCount": 6,
+      "chartSizes": [
+        {
+          "width": 608,
+          "height": 140
+        },
+        {
+          "width": 608,
+          "height": 140
+        },
+        {
+          "width": 608,
+          "height": 140
+        },
+        {
+          "width": 608,
+          "height": 140
+        },
+        {
+          "width": 608,
+          "height": 140
+        },
+        {
+          "width": 608,
+          "height": 140
+        }
+      ]
+    }
+  ],
+  "performance": [
+    {
+      "width": 1366,
+      "height": 768,
+      "durationMs": 30003.899999999994,
+      "frames": 7159,
+      "p50Ms": 4.19999999999709,
+      "p95Ms": 4.30000000000291,
+      "maxMs": 12.599999999991269,
+      "longFrames": 32,
+      "estimatedMissedRefreshes": 41,
+      "hiddenAtStart": false,
+      "hiddenAtEnd": false
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "durationMs": 30003.899999999994,
+      "frames": 7134,
+      "p50Ms": 4.19999999999709,
+      "p95Ms": 4.30000000000291,
+      "maxMs": 87.59999999999127,
+      "longFrames": 32,
+      "estimatedMissedRefreshes": 66,
+      "hiddenAtStart": false,
+      "hiddenAtEnd": false
+    }
+  ],
+  "traffic": {
+    "count": 477,
+    "minInterval": 0.2208589,
+    "maxInterval": 0.299166,
+    "maxDownloadMbps": 74.04670406221908,
+    "maxUploadMbps": 11.955819143185412
+  },
+  "pageErrors": []
+}

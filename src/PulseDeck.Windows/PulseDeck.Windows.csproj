@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType><TargetFramework>net10.0-windows</TargetFramework><UseWPF>true</UseWPF>
+    <AssemblyName>Wiffer</AssemblyName><Product>Wiffer</Product><Title>Wiffer</Title><Description>Wiffer — Sniff out your network problems.</Description><Version>0.6.0</Version><ApplicationIcon>../../ui/public/wiffer.ico</ApplicationIcon><ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../PulseDeck.Core/PulseDeck.Core.csproj" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3537.50" />
+    <Content Include="../../ui/dist/**/*"><Link>wwwroot/%(RecursiveDir)%(Filename)%(Extension)</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory></Content>
+  </ItemGroup>
+  <Target Name="CheckFrontend" BeforeTargets="BeforeBuild" Condition="!Exists('../../ui/dist/index.html')">
+    <Error Text="Build the local frontend first: npm --prefix ui ci &amp;&amp; npm --prefix ui run build" />
+  </Target>
+</Project>

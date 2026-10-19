@@ -1,0 +1,17 @@
+**/bin/
+**/obj/
+**/node_modules/
+ui/dist/
+artifacts/
+.vs/
+*.user
+*.log
+*.lnk
+*.zip
+.env
+.env.*
+*.pfx
+*.key
+# Local diagnostic evidence may contain identifying information.
+docs/evidence/
+docs/M0-HANDOFF.md

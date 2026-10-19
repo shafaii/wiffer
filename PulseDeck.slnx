@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/PulseDeck.Core/PulseDeck.Core.csproj" />
+  <Project Path="src/PulseDeck.Windows/PulseDeck.Windows.csproj" />
+  <Project Path="tests/PulseDeck.Tests/PulseDeck.Tests.csproj" />
+</Solution>
