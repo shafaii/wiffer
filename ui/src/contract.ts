@@ -28,9 +28,24 @@ export const snapshotSchema = z.object({ now: timestamp, sessionStarted: timesta
   network: z.object({ connected: z.boolean(), adapterId: z.string().nullable(), adapterName: z.string(), gateway: z.string().nullable(),
     adapters: z.array(z.object({ id: z.string(), name: z.string(), address: z.string(), gateway: z.string() }).strict()), error: z.string().nullable(), details: detailsSchema.nullable() }).strict(),
   settings: settingsSchema, gateway: endpointSchema, internet: endpointSchema }).strict();
+export const speedTestSchema = z.object({
+  status: z.enum(['idle', 'running', 'complete', 'canceled', 'error']), phase: z.enum(['Ready', 'Idle latency', 'Download', 'Upload', 'Complete', 'Canceled', 'Test stopped', 'Test failed']),
+  elapsedSeconds: nonnegative, progress: z.number().min(0).max(1),
+  liveDownloadMbps: nullableMetric, liveUploadMbps: nullableMetric, downloadMbps: nullableMetric, uploadMbps: nullableMetric,
+  idleLatencyMs: nullableMetric, downloadLatencyMs: nullableMetric, uploadLatencyMs: nullableMetric,
+  downloadBytes: nonnegative.int().safe().max(256_000_000), uploadBytes: nonnegative.int().safe().max(128_000_000), downloadSeconds: nullableMetric, uploadSeconds: nullableMetric, endpoint: z.literal('speed.cloudflare.com'),
+  server: z.string().max(128).nullable(), error: z.string().max(4096).nullable(),
+}).strict().refine(s => {
+  if (s.status === 'complete') return s.progress === 1 && s.downloadMbps !== null && s.uploadMbps !== null && (s.downloadSeconds ?? 0) > 0 && (s.uploadSeconds ?? 0) > 0 && s.downloadBytes > 0 && s.uploadBytes > 0 && s.liveDownloadMbps === null && s.liveUploadMbps === null;
+  if (s.status === 'idle' || s.status === 'canceled' || s.status === 'error') return s.downloadMbps === null && s.uploadMbps === null && s.liveDownloadMbps === null && s.liveUploadMbps === null;
+  return s.progress < 1;
+});
+export type SpeedTestState = z.infer<typeof speedTestSchema>;
+export const timingSchema = z.object({ batchId: nonnegative.int().safe(), sentUnixMs: nonnegative.int().safe(), sampleAgeMs: nonnegative, readMs: nonnegative }).strict();
 export const messageSchema = z.discriminatedUnion('type', [
   z.object({ version: z.literal(2), type: z.literal('snapshot'), snapshot: snapshotSchema }).strict(),
-  z.object({ version: z.literal(2), type: z.literal('traffic'), batch: trafficBatchSchema }).strict(),
+  z.object({ version: z.literal(2), type: z.literal('traffic'), batch: trafficBatchSchema, timing: timingSchema }).strict(),
+  z.object({ version: z.literal(2), type: z.literal('speedTest'), state: speedTestSchema }).strict(),
   z.object({ version: z.literal(2), type: z.literal('ack'), id: z.string() }).strict(),
   z.object({ version: z.literal(2), type: z.literal('error'), id: z.string().nullable(), message: z.string() }).strict(),
 ]);
@@ -39,6 +54,6 @@ export type Endpoint = z.infer<typeof endpointSchema>;
 export type Sample = z.infer<typeof sampleSchema>;
 export type Metrics = z.infer<typeof metricsSchema>;
 export type Settings = z.infer<typeof settingsSchema>;
-export type Command = { version: 2; id: string } & ({ type: 'ready' | 'pause' | 'resume' | 'reset' } | { type: 'configure'; settings: Settings });
+export type Command = { version: 2; id: string } & ({ type: 'ready' | 'pause' | 'resume' | 'reset' | 'startSpeedTest' | 'cancelSpeedTest' } | { type: 'configure'; settings: Settings });
 export interface WebViewBridge { postMessage(message: Command): void; addEventListener(type: 'message', handler: (event: MessageEvent) => void): void; removeEventListener(type: 'message', handler: (event: MessageEvent) => void): void }
 declare global { interface Window { chrome?: { webview?: WebViewBridge } } }

@@ -10,7 +10,7 @@ echarts.use([LineChart, ScatterChart, GridComponent, TooltipComponent, MarkLineC
 export type Instrument = 'gateway' | 'internet' | 'variation' | 'loss' | 'download' | 'upload';
 export const instruments: Instrument[] = ['gateway', 'internet', 'variation', 'loss', 'download', 'upload'];
 const titles = { gateway: 'Gateway RTT', internet: 'External RTT', variation: 'RTT variation', loss: 'Packet-loss events', download: 'Download history', upload: 'Upload history' };
-const colors = { gateway: '#91d6b5', internet: '#e5ae82', variation: '#e9ca81', loss: '#f18d83', download: '#91d6b5', upload: '#e5ae82' };
+const colors = { gateway: '#67c7ff', internet: '#b5dfff', variation: '#e9ca81', loss: '#f18d83', download: '#67c7ff', upload: '#b5dfff' };
 const escape = (s: string) => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
 export const InstrumentChart = memo(function InstrumentChart({ kind, snapshot, traffic, seconds, focus, expanded, onExpand, stale }: {
   kind: Instrument; snapshot: Snapshot | null; traffic: TrafficSample[]; seconds: number; focus: boolean; expanded: boolean; onExpand: () => void; stale: boolean;
@@ -69,6 +69,6 @@ export const InstrumentChart = memo(function InstrumentChart({ kind, snapshot, t
     <div className="chart-head"><h3><span>{String(instruments.indexOf(kind) + 1).padStart(2, '0')}</span>{titles[kind]}</h3><div><b>{kind === 'loss' ? sent ? `${(failed / sent * 100).toFixed(1)}%` : '—' : latest == null ? '—' : latest.toFixed(2)}</b><small>{kind === 'loss' ? 'combined loss' : unit}</small><button onClick={onExpand} aria-label={`${expanded ? 'Collapse' : 'Expand'} ${titles[kind]}`} title="Expand instrument">{expanded ? '↙' : '↗'}</button></div></div>
     <div className="chart-surface"><div ref={element} className="instrument-canvas" role="img" aria-label={`${titles[kind]}, ${seconds} second history. Hover for exact timestamps and values.`} />
       {!hasData && <div className="chart-empty">{stale ? 'Host updates stopped' : snapshot?.paused ? 'Paused · no samples in window' : snapshot && !snapshot.network.connected ? 'Disconnected · waiting for network' : isTraffic && traffic.at(-1)?.status === 'unavailable' ? 'Interface counters unavailable' : 'Awaiting native measurements'}</div>}</div>
-    <div className="chart-foot"><span>{kind === 'gateway' || kind === 'internet' ? `${endpoint?.target ?? 'No target'} · ${focus ? 'focus scale¹' : 'linear scale'}` : kind === 'variation' ? '10s rolling · mint GW / copper EXT' : kind === 'loss' ? `${failed} failed / ${sent} completed · dim ticks = replies` : 'Measured interface traffic · unsmoothed'}</span><span>{!snapshot ? 'NO HOST' : stale ? 'STALE' : snapshot.paused ? 'PAUSED' : !snapshot.network.connected ? 'OFFLINE' : 'LIVE'}</span></div>
+    <div className="chart-foot"><span>{kind === 'gateway' || kind === 'internet' ? `${endpoint?.target ?? 'No target'} · ${focus ? 'focus scale¹' : 'linear scale'}` : kind === 'variation' ? '10s rolling · sky GW / glacier EXT' : kind === 'loss' ? `${failed} failed / ${sent} completed · dim ticks = replies` : 'Measured interface traffic · unsmoothed'}</span><span>{!snapshot ? 'NO HOST' : stale ? 'STALE' : snapshot.paused ? 'PAUSED' : !snapshot.network.connected ? 'OFFLINE' : 'LIVE'}</span></div>
   </section>;
 });

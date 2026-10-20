@@ -1,7 +1,7 @@
 <Window x:Class="PulseDeck.Windows.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:wv="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
-        Title="PulseDeck â€” Network observatory" Width="1366" Height="880" MinWidth="860" MinHeight="540" Background="#0B1016" WindowStartupLocation="CenterScreen">
+        Title="Wiffer — Digital cockpit" Width="1366" Height="880" MinWidth="860" MinHeight="540" Background="#080E18" WindowStartupLocation="CenterScreen">
     <Grid>
-        <TextBlock x:Name="StartupMessage" Text="PulseDeck is preparing your local observatoryâ€¦" Foreground="#E9F1EF" FontSize="18" Margin="48" TextWrapping="Wrap" VerticalAlignment="Center" />
-        <wv:WebView2 x:Name="Browser" Visibility="Hidden" DefaultBackgroundColor="#0B1016" />
+        <TextBlock x:Name="StartupMessage" Text="Wiffer is preparing your digital cockpit…" Foreground="#EDF6FF" FontSize="18" Margin="48" TextWrapping="Wrap" VerticalAlignment="Center" />
+        <wv:WebView2 x:Name="Browser" Visibility="Hidden" DefaultBackgroundColor="#080E18" />
     </Grid>
 </Window>

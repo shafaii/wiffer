@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Net.NetworkInformation;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -18,6 +19,10 @@ public partial class MainWindow : Window
     private readonly SemaphoreSlim _commands = new(1, 1);
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(250) };
     private int _ticks;
+    private int _trafficQueued;
+    private long _batchId;
+    private readonly QuickSpeedTest _speedTest = new();
+    private SpeedTestState? _lastSpeedTest;
     private long _trafficGeneration = -1;
     private long _trafficSequence;
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web) { Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) } };
@@ -46,9 +51,28 @@ public partial class MainWindow : Window
         };
         Loaded += async (_, _) => { _initialization = InitializeAsync(); await _initialization; };
         Closing += OnClosing;
-        _timer.Tick += (_, _) => { if (++_ticks % 4 == 0) SendSnapshot(); SendTraffic(); };
+        _timer.Tick += (_, _) => { if (++_ticks % 4 == 0) SendSnapshot(); SendTraffic(); SendSpeedTest(); };
+        if (_engine.Traffic is { } traffic) traffic.SampleAvailable += QueueTraffic;
+        NetworkChange.NetworkAddressChanged += NetworkChanged;
     }
 
+    private void QueueTraffic()
+    {
+        if (_closing || Interlocked.Exchange(ref _trafficQueued, 1) != 0) return;
+        Dispatcher.BeginInvoke(() => { Interlocked.Exchange(ref _trafficQueued, 0); SendTraffic(); });
+    }
+    private async void NetworkChanged(object? sender, EventArgs e)
+    {
+        await _speedTest.CancelAsync("Network address changed during testing. Run a new test on the current connection.");
+    }
+    private void SendSpeedTest()
+    {
+        if (!_ready) return;
+        var state = _speedTest.Snapshot();
+        if (state == _lastSpeedTest) return;
+        _lastSpeedTest = state;
+        Send(new { version = 2, type = "speedTest", state });
+    }
     private static bool Trusted(string uri) => Uri.TryCreate(uri, UriKind.Absolute, out var parsed) && parsed.Scheme == "https" && parsed.Host == "wiffer.local" && parsed.IsDefaultPort && parsed.UserInfo.Length == 0;
 
     private async Task InitializeAsync()
@@ -91,7 +115,7 @@ public partial class MainWindow : Window
     }
 
     private void ShowFailure(string message) { Browser.Visibility = Visibility.Hidden; StartupMessage.Text = message; StartupMessage.Visibility = Visibility.Visible; }
-    private async Task PauseAfterFailureAsync(string message) { await _engine.SetPausedAsync(true); ShowFailure(message); }
+    private async Task PauseAfterFailureAsync(string message) { await _speedTest.CancelAsync(); await _engine.SetPausedAsync(true); ShowFailure(message); }
     private void Send(object message)
     {
         if (_closing || Browser.CoreWebView2 is null) return;
@@ -104,7 +128,7 @@ public partial class MainWindow : Window
         if (!_ready || _engine.Traffic is null) return;
         var batch = _engine.Traffic.Since(_trafficGeneration, _trafficSequence);
         if (batch.Generation == _trafficGeneration && batch.Samples.Length == 0) return;
-        Send(new { version = 2, type = "traffic", batch });
+        Send(new { version = 2, type = "traffic", batch, timing = new { batchId = ++_batchId, sentUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), sampleAgeMs = _engine.Traffic.LatestAgeMs, readMs = _engine.Traffic.LatestReadMs } });
         _trafficGeneration = batch.Generation;
         if (batch.Samples.Length > 0) _trafficSequence = batch.Samples[^1].Sequence;
     }
@@ -121,14 +145,17 @@ public partial class MainWindow : Window
         {
             switch (command.Type)
             {
-                case "ready": _trafficGeneration = -1; _trafficSequence = 0; _ready = true; Browser.Visibility = Visibility.Visible; StartupMessage.Visibility = Visibility.Collapsed; break;
-                case "pause": await _engine.SetPausedAsync(true); break;
+                case "ready": _lastSpeedTest = null; _trafficGeneration = -1; _trafficSequence = 0; _ready = true; Browser.Visibility = Visibility.Visible; StartupMessage.Visibility = Visibility.Collapsed; break;
+                case "startSpeedTest": _speedTest.Start(); break;
+                case "cancelSpeedTest": await _speedTest.CancelAsync(); break;
+                case "pause": await _speedTest.CancelAsync(); await _engine.SetPausedAsync(true); break;
                 case "resume": await _engine.SetPausedAsync(false); break;
-                case "reset": await _engine.ResetAsync(); break;
-                case "configure": await _engine.ConfigureAsync(command.Settings!); break;
+                case "reset": await _speedTest.CancelAsync(); await _engine.ResetAsync(); break;
+                case "configure": await _speedTest.CancelAsync(); await _engine.ConfigureAsync(command.Settings!); break;
             }
             SendSnapshot();
             SendTraffic();
+            SendSpeedTest();
             Send(new { version = 2, type = "ack", id = command.Id });
         }
         catch (Exception ex) { Send(new { version = 2, type = "error", id = command.Id, message = ex.Message }); }
@@ -141,9 +168,11 @@ public partial class MainWindow : Window
         e.Cancel = true;
         if (_closing) return;
         _closing = true; _timer.Stop();
+        NetworkChange.NetworkAddressChanged -= NetworkChanged;
+        if (_engine.Traffic is { } traffic) traffic.SampleAvailable -= QueueTraffic;
         if (_initialization is not null) await _initialization;
         await _commands.WaitAsync();
-        try { await _engine.DisposeAsync(); Browser.Dispose(); }
+        try { await _speedTest.DisposeAsync(); await _engine.DisposeAsync(); Browser.Dispose(); }
         finally { _commands.Release(); _closed = true; Close(); }
     }
 }

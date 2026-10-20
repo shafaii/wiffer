@@ -1,18 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
  <title>Wiffer — the signal detective</title>
- <rect x="2" y="2" width="124" height="124" rx="33" fill="#202721"/>
- <path d="M29 108c2-20 12-31 32-31s32 12 34 31" fill="#91d6b5"/>
- <path d="m48 81 13 12-10 13-15-21m37-4L61 93l10 13 15-21" fill="#567b65"/>
- <path d="M39 49c-3 19 1 35 17 38 11 2 21-5 23-15l15-2c8-1 9-10 2-13L78 50" fill="#efd9b4" stroke="#151d17" stroke-width="4" stroke-linejoin="round"/>
- <path d="M38 45 46 21l16 5 16-3 8 26" fill="#dba875" stroke="#151d17" stroke-width="4" stroke-linejoin="round"/>
- <path d="m41 36 40 3 3 10-47-1" fill="#364e3e"/>
- <path d="M25 48q35-10 68 4" stroke="#151d17" stroke-width="12" stroke-linecap="round"/>
- <path d="M25 46q35-10 68 4" stroke="#e5ae82" stroke-width="6" stroke-linecap="round"/>
- <path d="m63 58 7-2" stroke="#26372b" stroke-width="4" stroke-linecap="round"/>
- <path d="M57 75q7 4 13-1" stroke="#71543c" stroke-width="3" stroke-linecap="round"/>
- <circle cx="85" cy="82" r="14" fill="#91d6b5" fill-opacity=".15" stroke="#16241b" stroke-width="8"/>
- <circle cx="85" cy="82" r="14" stroke="#e8c18c" stroke-width="4"/>
- <path d="m95 94 11 13" stroke="#e8c18c" stroke-width="8" stroke-linecap="round"/>
- <path d="m80 77 4-3" stroke="#fff5d8" stroke-width="3" stroke-linecap="round"/>
- <path d="M103 38q6 4 7 10m-3-20q12 7 14 19" stroke="#91d6b5" stroke-width="4" stroke-linecap="round"/>
+ <rect x="2" y="2" width="124" height="124" rx="33" fill="#132236"/>
+ <path d="M29 108c2-20 12-31 32-31s32 12 34 31" fill="#67c7ff"/>
+ <path d="m48 81 13 12-10 13-15-21m37-4L61 93l10 13 15-21" fill="#477da3"/>
+ <path d="M39 49c-3 19 1 35 17 38 11 2 21-5 23-15l15-2c8-1 9-10 2-13L78 50" fill="#e2f2ff" stroke="#091320" stroke-width="4" stroke-linejoin="round"/>
+ <path d="M38 45 46 21l16 5 16-3 8 26" fill="#99cff4" stroke="#091320" stroke-width="4" stroke-linejoin="round"/>
+ <path d="m41 36 40 3 3 10-47-1" fill="#285675"/>
+ <path d="M25 48q35-10 68 4" stroke="#091320" stroke-width="12" stroke-linecap="round"/>
+ <path d="M25 46q35-10 68 4" stroke="#b5dfff" stroke-width="6" stroke-linecap="round"/>
+ <path d="m63 58 7-2" stroke="#132d45" stroke-width="4" stroke-linecap="round"/>
+ <path d="M57 75q7 4 13-1" stroke="#507b9d" stroke-width="3" stroke-linecap="round"/>
+ <circle cx="85" cy="82" r="14" fill="#67c7ff" fill-opacity=".15" stroke="#0d2438" stroke-width="8"/>
+ <circle cx="85" cy="82" r="14" stroke="#b6e5ff" stroke-width="4"/>
+ <path d="m95 94 11 13" stroke="#b6e5ff" stroke-width="8" stroke-linecap="round"/>
+ <path d="m80 77 4-3" stroke="#f3fbff" stroke-width="3" stroke-linecap="round"/>
+ <path d="M103 38q6 4 7 10m-3-20q12 7 14 19" stroke="#67c7ff" stroke-width="4" stroke-linecap="round"/>
 </svg>

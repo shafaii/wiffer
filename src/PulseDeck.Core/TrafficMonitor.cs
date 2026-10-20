@@ -46,7 +46,12 @@ public sealed class TrafficMonitor(ITrafficProvider provider, TimeProvider clock
     private readonly Queue<TrafficSample> _samples = new();
     private long _sequence;
     private long _generation;
-    public void Clear() { lock (_sync) { _samples.Clear(); _generation++; } }
+    private long _latestTimestamp;
+    private double _latestReadMs;
+    public event Action? SampleAvailable;
+    public double LatestAgeMs { get { lock (_sync) return _latestTimestamp == 0 ? 0 : Math.Max(0, clock.GetElapsedTime(_latestTimestamp).TotalMilliseconds); } }
+    public double LatestReadMs { get { lock (_sync) return _latestReadMs; } }
+    public void Clear() { lock (_sync) { _samples.Clear(); _generation++; _latestTimestamp = 0; _latestReadMs = 0; } }
     public TrafficBatch Since(long generation, long sequence)
     {
         lock (_sync) return new(_generation, _samples.Where(s => generation != _generation || s.Sequence > sequence).ToArray());
@@ -59,19 +64,24 @@ public sealed class TrafficMonitor(ITrafficProvider provider, TimeProvider clock
             while (!token.IsCancellationRequested)
             {
                 var start = clock.GetTimestamp();
+                var completed = start;
                 TrafficSample sample;
                 try
                 {
                     var counters = provider.Read(adapterId);
-                    sample = calculator.Measure(counters, clock.GetTimestamp(), clock.GetUtcNow(), clock, ++_sequence);
+                    completed = clock.GetTimestamp();
+                    sample = calculator.Measure(counters, completed, clock.GetUtcNow(), clock, _sequence + 1);
                 }
                 catch (Exception ex)
                 {
+                    completed = clock.GetTimestamp();
                     calculator.Reset();
-                    sample = new(++_sequence, clock.GetUtcNow(), 0, "unavailable", null, null, null, null, ex.Message);
+                    sample = new(_sequence + 1, clock.GetUtcNow(), 0, "unavailable", null, null, null, null, ex.Message);
                 }
                 token.ThrowIfCancellationRequested();
-                lock (_sync) { _samples.Enqueue(sample); while (_samples.Count > Capacity) _samples.Dequeue(); }
+                ++_sequence;
+                lock (_sync) { _latestTimestamp = completed; _latestReadMs = clock.GetElapsedTime(start, completed).TotalMilliseconds; _samples.Enqueue(sample); while (_samples.Count > Capacity) _samples.Dequeue(); }
+                SampleAvailable?.Invoke();
                 var delay = TimeSpan.FromMilliseconds(250) - clock.GetElapsedTime(start);
                 await Task.Delay(delay > TimeSpan.Zero ? delay : TimeSpan.FromMilliseconds(10), clock, token).ConfigureAwait(false);
             }

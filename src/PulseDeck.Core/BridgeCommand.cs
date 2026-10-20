@@ -17,7 +17,7 @@ public sealed record BridgeCommand(string Id, string Type, MonitorSettings? Sett
         var id = root.GetProperty("id").GetString();
         var type = root.GetProperty("type").GetString();
         if (string.IsNullOrWhiteSpace(id) || id.Length > 64) throw new ArgumentException("Invalid command ID.");
-        if (type is not ("ready" or "pause" or "resume" or "reset" or "configure")) throw new ArgumentException("Unknown command.");
+        if (type is not ("ready" or "pause" or "resume" or "reset" or "configure" or "startSpeedTest" or "cancelSpeedTest")) throw new ArgumentException("Unknown command.");
         MonitorSettings? settings = null;
         if (type == "configure")
         {

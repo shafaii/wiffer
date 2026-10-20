@@ -1,0 +1,15 @@
+const {chromium}=require(process.env.WIFFER_PLAYWRIGHT||'playwright'); const fs=require('fs');
+(async()=>{const browser=await chromium.connectOverCDP('http://127.0.0.1:9223');const page=browser.contexts().flatMap(c=>c.pages()).find(p=>p.url().startsWith('https://wiffer.local/'));
+await page.waitForFunction(()=>document.querySelector('.status-dot.is-live'));
+const cdp=await page.context().newCDPSession(page);const results=[];
+for(const [width,height]of [[1366,768],[1920,1080]]){
+await cdp.send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:false});
+const result=await page.evaluate(()=>new Promise(resolve=>{
+ const frames=[],age=[],intervals=[],host=[],read=[],nativeAge=[],nextFrame=[],domCommit=[];let receipt=0,expected=null;let last=0,first=0,count=0; const ids=new Set();let missing=0,lastId=0;
+ const target=document.querySelector('.download .digital-readout strong');const observer=new MutationObserver(()=>{if(receipt&&target?.textContent===expected){domCommit.push(performance.now()-receipt);receipt=0;}});if(target)observer.observe(target,{childList:true,characterData:true,subtree:true});
+ const handler=e=>{if(e.data.type==='traffic'){const m=e.data;const receivedAt=performance.now();const latest=m.batch.samples.at(-1);if(target&&latest){const text=latest.downloadMbps===null?'—':latest.downloadMbps.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});if(target.textContent!==text){receipt=receivedAt;expected=text;}}requestAnimationFrame(()=>nextFrame.push(performance.now()-receivedAt));const now=Date.now();count++;for(const s of m.batch.samples){if(ids.has(s.sequence))continue;ids.add(s.sequence);if(s.status==='measured')intervals.push(s.elapsedSeconds*1000);age.push(now-Date.parse(s.timestamp));}if(m.timing){const t=m.timing;if(lastId)missing+=Math.max(0,t.batchId-lastId-1);lastId=t.batchId;host.push(now-t.sentUnixMs);read.push(t.readMs);nativeAge.push(t.sampleAgeMs);}}};
+ window.chrome.webview.addEventListener('message',handler);
+ const stats=a=>{if(!a.length)return null;const s=[...a].sort((a,b)=>a-b);return {count:a.length,mean:a.reduce((a,b)=>a+b,0)/a.length,p50:s[Math.floor(s.length*.5)],p95:s[Math.floor(s.length*.95)],max:s.at(-1)}};
+ function tick(t){if(!first)first=t;if(last)frames.push(t-last);last=t;if(t-first<30000){requestAnimationFrame(tick);return;}window.chrome.webview.removeEventListener('message',handler);observer.disconnect();resolve({durationMs:t-first,frames:stats(frames),sampleToJsWallMs:stats(age),nativeIntervalsMs:stats(intervals),hostToJsWallMs:stats(host),nativeReadMs:stats(read),sampleToHostMs:stats(nativeAge),jsToNextRafMs:stats(nextFrame),jsToReadoutDomCommitMs:stats(domCommit),batchCount:count,batchGaps:missing,hidden:document.hidden});}requestAnimationFrame(tick);
+}));results.push({width,height,...result});console.log(JSON.stringify(results.at(-1)));fs.writeFileSync(process.argv[2],JSON.stringify(results,null,2));}
+await cdp.send('Emulation.clearDeviceMetricsOverride');fs.writeFileSync(process.argv[2],JSON.stringify(results,null,2));process.exit(0);})().catch(e=>{console.error(e);process.exit(1)});

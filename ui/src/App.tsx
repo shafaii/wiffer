@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { InstrumentChart, instruments, type Instrument } from './InstrumentChart';
 import { TrafficDeck } from './SpeedDial';
 import { trafficStore } from './trafficStore';
+import { SpeedTest } from './SpeedTest';
+import { TelemetryDiagnostics } from './TelemetryDiagnostics';
 import { FrameCheck } from './FrameCheck';
 import { useMonitor } from './useMonitor';
 import type { Endpoint, Metrics, Settings, Snapshot } from './contract';
@@ -68,7 +70,7 @@ function History() {
       <div className="eyebrow">SPEEDTEST {s.name}<span className="muted">IMPORTED SUMMARY</span></div><div className="speed-numbers"><div><small>↓ DOWNLOAD</small><strong>{s.down}<em>Mbps</em></strong></div><div><small>↑ UPLOAD</small><strong>{s.up}<em>Mbps</em></strong></div></div>
       <div className="loaded-latency"><span>Idle <b>{s.idle} ms</b></span><span>Loaded ↓ <b>{s.download} ms</b></span><span>Loaded ↑ <b className="amber">{s.upload} ms</b></span></div>
     </article>)}</div>
-    <aside className="context-note"><span className="note-icon">i</span><div><strong>Observation context</strong><p>Concurrent traffic was reported during troubleshooting. These summaries do not establish the cause of latency. No speed tests are run by Wiffer.</p></div></aside>
+    <aside className="context-note"><span className="note-icon">i</span><div><strong>Observation context</strong><p>Concurrent traffic was reported during troubleshooting. These summaries do not establish the cause of latency. These imported tests are separate from Wiffer’s on-demand Quick Speed Test.</p></div></aside>
   </section>;
 }
 
@@ -99,15 +101,16 @@ export function App() {
   const [page, setPage] = useState<'live' | 'history'>('live');
   const [seconds, setSeconds] = useState(60);
   const [focus, setFocus] = useState(true);
+  const [speedOpen, setSpeedOpen] = useState(false);
   const [settings, setSettings] = useState(false);
   const [expanded, setExpanded] = useState<Instrument | null>(null);
-  const traffic = trafficStore.history(); // Main cockpit/chart updates are limited to the 1 Hz host snapshot.
+  const traffic = useMemo(() => trafficStore.history(), [snapshot]); // Main cockpit/chart updates are limited to the 1 Hz host snapshot.
   const connected = snapshot?.network.connected;
   const inactive = !snapshot || snapshot.paused || !connected || stale;
   const state = !snapshot ? 'Awaiting desktop' : stale ? 'Host connection lost' : snapshot.paused ? 'Paused' : snapshot.network.error ? 'Detection unavailable' : !connected ? 'Disconnected' : 'Monitoring';
   useEffect(() => { const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') setExpanded(null); }; window.addEventListener('keydown', escape); return () => window.removeEventListener('keydown', escape); }, []);
   return <div className="app-shell">
-    <header className="topbar"><div className="brand"><img className="brand-icon" src="/wiffer.svg" alt="Wiffer detective mascot" /><span>Wiffer<small>SNIFF OUT YOUR NETWORK PROBLEMS.</small></span><span className="edition">M0.6</span></div>
+    <header className="topbar"><div className="brand"><img className="brand-icon" src="/wiffer.svg" alt="Wiffer detective mascot" /><span>Wiffer<small>SNIFF OUT YOUR NETWORK PROBLEMS.</small></span><span className="edition">M0.7</span></div>
       <nav aria-label="Main views"><button className={page === 'live' ? 'active' : ''} onClick={() => setPage('live')}>Instruments</button><button className={page === 'history' ? 'active' : ''} onClick={() => setPage('history')}>Historical context <span className="count">6</span></button></nav>
       <div className="header-tools"><span className="local-label">ON DEVICE / WINDOWS</span><button aria-label="Measurement settings" disabled={!snapshot} onClick={() => setSettings(true)}><Glyph name="settings" /></button></div>
     </header>
@@ -117,7 +120,7 @@ export function App() {
     {error && <div className="error-banner" role="alert">{error}<button onClick={clearError} aria-label="Dismiss error">×</button></div>}
     {page === 'history' ? <History /> : <main>
       <div className="session-strip"><div className="connection-state"><span className={`status-dot ${!inactive ? 'is-live' : ''}`} /><strong>{state}</strong><span>{snapshot?.network.adapterName ?? 'Native instrumentation'}</span><span className="strip-path">{snapshot?.gateway.target ?? 'Gateway unknown'} <i>→</i> {snapshot?.internet.target ?? '1.1.1.1'}</span></div>
-        <div className="session-actions"><span className="session-clock">{elapsed(snapshot?.runningSeconds ?? 0)}<small>ACTIVE TIME</small></span><button disabled={!snapshot || pending || stale} onClick={() => command(snapshot?.paused ? 'resume' : 'pause')}><Glyph name={snapshot?.paused ? 'play' : 'pause'} />{snapshot?.paused ? 'Resume' : 'Pause'}</button><button disabled={!snapshot || pending || stale} onClick={() => command('reset')}><Glyph name="reset" />Reset</button></div>
+        <div className="session-actions"><span className="session-clock">{elapsed(snapshot?.runningSeconds ?? 0)}<small>ACTIVE TIME</small></span><button className="test-speed" disabled={!snapshot || stale} onClick={() => setSpeedOpen(true)}>↗ Test Speed</button><button disabled={!snapshot || pending || stale} onClick={() => command(snapshot?.paused ? 'resume' : 'pause')}><Glyph name={snapshot?.paused ? 'play' : 'pause'} />{snapshot?.paused ? 'Resume' : 'Pause'}</button><button disabled={!snapshot || pending || stale} onClick={() => command('reset')}><Glyph name="reset" />Reset</button></div>
       </div>
       <div className="cockpit"><TrafficDeck inactive={inactive || !snapshot?.network.adapterId} state={!snapshot?.network.adapterId && snapshot ? 'Interface unavailable' : state} /><section className="signal-deck"><div className="instrument-bar"><span>PATH RESPONSE</span><span>NATIVE ICMP / ~1 Hz</span></div>
         <div className="signal-readings"><Latest endpoint={snapshot?.gateway} color="gateway" now={snapshot?.now} inactive={inactive} /><Latest endpoint={snapshot?.internet} color="internet" now={snapshot?.now} inactive={inactive} /></div>
@@ -132,10 +135,11 @@ export function App() {
       <ConnectionInspector snapshot={snapshot} />
       <details className="measurement-details"><summary>Rolling statistics & measurement notes</summary><div className="metrics-table"><div className="metric-row table-head"><span>ENDPOINT</span><span>MIN</span><span>AVG</span><span>MAX</span><span>MEDIAN</span><span>P95</span><span>VARIATION</span><span>LOSS</span></div>{snapshot && <><MetricRow endpoint={snapshot.gateway} seconds={seconds} /><MetricRow endpoint={snapshot.internet} seconds={seconds} /></>}</div>
         <p>Loss = (timeouts + transport errors) ÷ completed probes. Canceled probes and disconnected intervals are not loss. RTT statistics use successes only; P95 uses nearest rank. Summary variation uses successive successful RTTs within the selected window; the chart uses a 10-second window and skips failures. Missing replies break traces.</p>
-        <p>Speeds = byte-counter delta × 8 ÷ monotonic elapsed seconds ÷ 1,000,000. This is total traffic through the selected physical interface, including LAN traffic. The short average is time-weighted over approximately 3 seconds. Auto dial ranges only grow during this view; select a fixed range for comparisons. Numbers are measured; only the pointers ease. No speed tests run automatically.</p><FrameCheck />
+        <p>Speeds = byte-counter delta × 8 ÷ monotonic elapsed seconds ÷ 1,000,000. This is total traffic through the selected physical interface, including LAN traffic. The short average is time-weighted over approximately 3 seconds. Auto arc ranges only grow during this view; select a fixed range for comparisons. Numbers are measured; only the illuminated arcs use spring motion. No speed tests run automatically.</p><TelemetryDiagnostics snapshot={snapshot}/><FrameCheck />
       </details>
     </main>}
-    <footer><span><span className="tiny-dot" /> LOCAL MEASUREMENTS <i>/</i> ICMP ~1 Hz <i>/</i> TRAFFIC ~4 Hz <i>/</i> {snapshot?.settings.timeoutMs ?? 2500} ms timeout</span><span>Wiffer <b>0.6</b></span></footer>
+    <footer><span><span className="tiny-dot" /> LOCAL MEASUREMENTS <i>/</i> ICMP ~1 Hz <i>/</i> TRAFFIC ~4 Hz <i>/</i> {snapshot?.settings.timeoutMs ?? 2500} ms timeout</span><span>Wiffer <b>0.7</b></span></footer>
+    {speedOpen && <SpeedTest command={command} pending={pending} onClose={() => setSpeedOpen(false)} />}
     {settings && snapshot && <SettingsDialog snapshot={snapshot} pending={pending} error={error} onClose={() => setSettings(false)} onSave={s => command('configure', s)} />}
   </div>;
 }

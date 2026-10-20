@@ -1,0 +1,529 @@
+{
+  "date": "2026-10-19",
+  "baseline": [
+    {
+      "width": 1366,
+      "height": 768,
+      "durationMs": 30001.8,
+      "frames": {
+        "count": 7013,
+        "mean": 4.278026522173107,
+        "p50": 4.199999999999818,
+        "p95": 4.30000000000291,
+        "max": 46
+      },
+      "sampleToJsWallMs": {
+        "count": 115,
+        "mean": 131,
+        "p50": 137,
+        "p95": 245,
+        "max": 271
+      },
+      "nativeIntervalsMs": {
+        "count": 115,
+        "mean": 262.4712347826088,
+        "p50": 263.24789999999996,
+        "p95": 267.5875,
+        "max": 275.40819999999997
+      },
+      "hostToJsWallMs": null,
+      "nativeReadMs": null,
+      "sampleToHostMs": null,
+      "batchCount": 113,
+      "batchGaps": 0,
+      "hidden": false
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "durationMs": 30003.2,
+      "frames": {
+        "count": 6295,
+        "mean": 4.766195393169182,
+        "p50": 4.19999999999709,
+        "p95": 7.30000000000291,
+        "max": 31
+      },
+      "sampleToJsWallMs": {
+        "count": 114,
+        "mean": 136.46491228070175,
+        "p50": 132,
+        "p95": 251,
+        "max": 256
+      },
+      "nativeIntervalsMs": {
+        "count": 114,
+        "mean": 261.81864122807013,
+        "p50": 263.5103,
+        "p95": 270.5036,
+        "max": 276.9024
+      },
+      "hostToJsWallMs": null,
+      "nativeReadMs": null,
+      "sampleToHostMs": null,
+      "batchCount": 112,
+      "batchGaps": 0,
+      "hidden": false
+    }
+  ],
+  "final": [
+    {
+      "width": 1366,
+      "height": 768,
+      "durationMs": 30000.1,
+      "frames": {
+        "count": 6487,
+        "mean": 4.624649298597194,
+        "p50": 4.200000000000728,
+        "p95": 6.700000000000728,
+        "max": 20.800000000000182
+      },
+      "sampleToJsWallMs": {
+        "count": 115,
+        "mean": 0.6260869565217392,
+        "p50": 1,
+        "p95": 1,
+        "max": 4
+      },
+      "nativeIntervalsMs": {
+        "count": 115,
+        "mean": 260.68905304347817,
+        "p50": 263.8937,
+        "p95": 264.7322,
+        "max": 265.3279
+      },
+      "hostToJsWallMs": {
+        "count": 115,
+        "mean": 0.48695652173913045,
+        "p50": 0,
+        "p95": 1,
+        "max": 4
+      },
+      "nativeReadMs": {
+        "count": 115,
+        "mean": 0.39289304347826065,
+        "p50": 0.3636,
+        "p95": 0.6587,
+        "max": 0.9278
+      },
+      "sampleToHostMs": {
+        "count": 115,
+        "mean": 0.11828869565217387,
+        "p50": 0.0899,
+        "p95": 0.3002,
+        "max": 0.5488
+      },
+      "jsToNextRafMs": {
+        "count": 115,
+        "mean": 2.526086957299191,
+        "p50": 2.4000000059604645,
+        "p95": 5.5999999940395355,
+        "max": 12.5
+      },
+      "jsToReadoutDomCommitMs": {
+        "count": 111,
+        "mean": 0.6009009002565263,
+        "p50": 0.5,
+        "p95": 1.199999988079071,
+        "max": 2.300000011920929
+      },
+      "batchCount": 115,
+      "batchGaps": 0,
+      "hidden": false
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "durationMs": 30003.299999999996,
+      "frames": {
+        "count": 6245,
+        "mean": 4.804371497197757,
+        "p50": 4.19999999999709,
+        "p95": 7.200000000004366,
+        "max": 29.19999999999709
+      },
+      "sampleToJsWallMs": {
+        "count": 116,
+        "mean": 0.7413793103448276,
+        "p50": 1,
+        "p95": 1,
+        "max": 15
+      },
+      "nativeIntervalsMs": {
+        "count": 116,
+        "mean": 259.7395491379311,
+        "p50": 263.86310000000003,
+        "p95": 264.7081,
+        "max": 265.23760000000004
+      },
+      "hostToJsWallMs": {
+        "count": 116,
+        "mean": 0.6206896551724138,
+        "p50": 0,
+        "p95": 1,
+        "max": 15
+      },
+      "nativeReadMs": {
+        "count": 116,
+        "mean": 0.3627560344827587,
+        "p50": 0.3262,
+        "p95": 0.5758,
+        "max": 1.0609
+      },
+      "sampleToHostMs": {
+        "count": 116,
+        "mean": 0.1194491379310345,
+        "p50": 0.0841,
+        "p95": 0.2654,
+        "max": 1.2074
+      },
+      "jsToNextRafMs": {
+        "count": 116,
+        "mean": 2.4120689666476745,
+        "p50": 2.199999988079071,
+        "p95": 5.4000000059604645,
+        "max": 8.099999994039536
+      },
+      "jsToReadoutDomCommitMs": {
+        "count": 107,
+        "mean": 0.5859813082998044,
+        "p50": 0.5,
+        "p95": 1.0999999940395355,
+        "max": 1.600000023841858
+      },
+      "batchCount": 116,
+      "batchGaps": 0,
+      "hidden": false
+    }
+  ],
+  "providerBaseline": [
+    {
+      "provider": "physical-interface counters",
+      "requestedHz": 4,
+      "observedHz": 3.9185573180412376,
+      "readP50Ms": 16.016700000000583,
+      "readP95Ms": 19.617500000000064,
+      "intervalP95Ms": 263.2006000000001,
+      "intervalMaxMs": 266.8896,
+      "cpuOneCorePercent": 2.546874885900005,
+      "count": 24,
+      "errors": 0
+    },
+    {
+      "provider": "physical-interface counters",
+      "requestedHz": 8,
+      "observedHz": 7.534848170465191,
+      "readP50Ms": 14.139900000000125,
+      "readP95Ms": 18.683500000000095,
+      "intervalP95Ms": 139.60689999999977,
+      "intervalMaxMs": 140.08399999999983,
+      "cpuOneCorePercent": 4.865906356539789,
+      "count": 46,
+      "errors": 0
+    },
+    {
+      "provider": "physical-interface counters",
+      "requestedHz": 16,
+      "observedHz": 14.78283262927293,
+      "readP50Ms": 14.015900000000329,
+      "readP95Ms": 18.837800000000243,
+      "intervalP95Ms": 76.5018,
+      "intervalMaxMs": 77.59460000000036,
+      "cpuOneCorePercent": 5.702504795578433,
+      "count": 89,
+      "errors": 0
+    },
+    {
+      "provider": "physical-interface counters",
+      "requestedHz": 32,
+      "observedHz": 29.00392183319003,
+      "readP50Ms": 13.311799999999948,
+      "readP95Ms": 18.684799999999996,
+      "intervalP95Ms": 45.337999999999965,
+      "intervalMaxMs": 50.3845,
+      "cpuOneCorePercent": 11.193272950828465,
+      "count": 174,
+      "errors": 0
+    },
+    {
+      "provider": "adapter + Wi-Fi inspector",
+      "requestedHz": 0.3333333333333333,
+      "observedHz": 0.33234525427511075,
+      "readP50Ms": 26.199099999999817,
+      "readP95Ms": 28.194500000000517,
+      "intervalP95Ms": 3013.6569999999997,
+      "intervalMaxMs": 3013.6569999999997,
+      "cpuOneCorePercent": 0.173012491734432,
+      "count": 3,
+      "errors": 0
+    },
+    {
+      "provider": "adapter + Wi-Fi inspector",
+      "requestedHz": 1,
+      "observedHz": 0.9924043726279442,
+      "readP50Ms": 23.253899999999703,
+      "readP95Ms": 25.406000000000002,
+      "intervalP95Ms": 1013.7411999999999,
+      "intervalMaxMs": 1013.7411999999999,
+      "cpuOneCorePercent": 0.5169196599218916,
+      "count": 9,
+      "errors": 0
+    },
+    {
+      "provider": "adapter + Wi-Fi inspector",
+      "requestedHz": 2,
+      "observedHz": 1.9722006714183167,
+      "readP50Ms": 24.28800000000001,
+      "readP95Ms": 33.933500000000095,
+      "intervalP95Ms": 514.1991999999999,
+      "intervalMaxMs": 514.1991999999999,
+      "cpuOneCorePercent": 1.3705571689876377,
+      "count": 18,
+      "errors": 0
+    },
+    {
+      "provider": "gateway ICMP (sequential)",
+      "requestedHz": 1,
+      "observedHz": 0.9939913817368834,
+      "readP50Ms": 3.479400000000169,
+      "readP95Ms": 10.949300000000001,
+      "intervalP95Ms": 1010.1472,
+      "intervalMaxMs": 1010.1472,
+      "cpuOneCorePercent": 0,
+      "count": 6,
+      "errors": 0
+    },
+    {
+      "provider": "gateway ICMP (sequential)",
+      "requestedHz": 2,
+      "observedHz": 1.9846488852109938,
+      "readP50Ms": 3.006199999999808,
+      "readP95Ms": 4.871399999999994,
+      "intervalP95Ms": 511.4962999999998,
+      "intervalMaxMs": 511.4962999999998,
+      "cpuOneCorePercent": 0.25807428978533536,
+      "count": 12,
+      "errors": 0
+    },
+    {
+      "provider": "gateway ICMP (sequential)",
+      "requestedHz": 4,
+      "observedHz": 3.9269104308268066,
+      "readP50Ms": 3.210899999999583,
+      "readP95Ms": 5.07680000000002,
+      "intervalP95Ms": 263.76229999999987,
+      "intervalMaxMs": 263.9359999999999,
+      "cpuOneCorePercent": 0.5112053513859546,
+      "count": 24,
+      "errors": 0
+    },
+    {
+      "provider": "public ICMP (1 Hz ceiling)",
+      "requestedHz": 1,
+      "observedHz": 0.9985604951613853,
+      "readP50Ms": 5.645199999999932,
+      "readP95Ms": 6.20270000000005,
+      "intervalP95Ms": 1002.7313,
+      "intervalMaxMs": 1002.7313,
+      "cpuOneCorePercent": 0,
+      "count": 6,
+      "errors": 0
+    }
+  ],
+  "providerOptimized": [
+    {
+      "provider": "physical-interface counters",
+      "requestedHz": 4,
+      "observedHz": 3.901796001788922,
+      "readP50Ms": 0.20870000000013533,
+      "readP95Ms": 0.35640000000057626,
+      "intervalP95Ms": 263.6583999999999,
+      "intervalMaxMs": 264.10220000000004,
+      "cpuOneCorePercent": 1.016164444867819,
+      "count": 24,
+      "errors": 0
+    },
+    {
+      "provider": "physical-interface counters",
+      "requestedHz": 8,
+      "observedHz": 7.708581435842272,
+      "readP50Ms": 0.22640000000001237,
+      "readP95Ms": 0.31559999999990396,
+      "intervalP95Ms": 137.79719999999998,
+      "intervalMaxMs": 140.20439999999962,
+      "cpuOneCorePercent": 1.2816287941051738,
+      "count": 47,
+      "errors": 0
+    },
+    {
+      "provider": "physical-interface counters",
+      "requestedHz": 16,
+      "observedHz": 15.050721181226084,
+      "readP50Ms": 0.22860000000036962,
+      "readP95Ms": 0.3616999999994732,
+      "intervalP95Ms": 77.29009999999926,
+      "intervalMaxMs": 77.6214,
+      "cpuOneCorePercent": 1.0343999895004266,
+      "count": 91,
+      "errors": 0
+    },
+    {
+      "provider": "physical-interface counters",
+      "requestedHz": 32,
+      "observedHz": 28.963803198491206,
+      "readP50Ms": 0.2496000000001004,
+      "readP95Ms": 0.41600000000016735,
+      "intervalP95Ms": 46.462800000000016,
+      "intervalMaxMs": 46.85410000000047,
+      "cpuOneCorePercent": 0.5204396900997316,
+      "count": 174,
+      "errors": 0
+    },
+    {
+      "provider": "adapter + Wi-Fi inspector",
+      "requestedHz": 0.3333333333333333,
+      "observedHz": 0.3331114866350925,
+      "readP50Ms": 25.484899999999925,
+      "readP95Ms": 26.5324,
+      "intervalP95Ms": 3004.7292,
+      "intervalMaxMs": 3004.7292,
+      "cpuOneCorePercent": 0.5203297235382448,
+      "count": 3,
+      "errors": 0
+    },
+    {
+      "provider": "adapter + Wi-Fi inspector",
+      "requestedHz": 1,
+      "observedHz": 0.9918237029400729,
+      "readP50Ms": 28.448699999999917,
+      "readP95Ms": 36.03560000000016,
+      "intervalP95Ms": 1014.8209999999999,
+      "intervalMaxMs": 1014.8209999999999,
+      "cpuOneCorePercent": 0.6883863538782994,
+      "count": 9,
+      "errors": 0
+    },
+    {
+      "provider": "adapter + Wi-Fi inspector",
+      "requestedHz": 2,
+      "observedHz": 1.969519119662954,
+      "readP50Ms": 27.32929999999999,
+      "readP95Ms": 37.93080000000009,
+      "intervalP95Ms": 514.2172,
+      "intervalMaxMs": 514.2172,
+      "cpuOneCorePercent": 1.8801782501964546,
+      "count": 18,
+      "errors": 0
+    },
+    {
+      "provider": "gateway ICMP (sequential)",
+      "requestedHz": 1,
+      "observedHz": 0.9911393529441883,
+      "readP50Ms": 3.285299999999893,
+      "readP95Ms": 10.2985,
+      "intervalP95Ms": 1011.3858999999999,
+      "intervalMaxMs": 1011.3858999999999,
+      "cpuOneCorePercent": 0.5165113130109299,
+      "count": 6,
+      "errors": 0
+    },
+    {
+      "provider": "gateway ICMP (sequential)",
+      "requestedHz": 2,
+      "observedHz": 1.9531485820496415,
+      "readP50Ms": 3.4572000000002845,
+      "readP95Ms": 5.581899999999905,
+      "intervalP95Ms": 513.7491999999997,
+      "intervalMaxMs": 513.7491999999997,
+      "cpuOneCorePercent": 0.25425652268462867,
+      "count": 12,
+      "errors": 0
+    },
+    {
+      "provider": "gateway ICMP (sequential)",
+      "requestedHz": 4,
+      "observedHz": 3.8169045462785713,
+      "readP50Ms": 2.887300000000323,
+      "readP95Ms": 4.9722000000000435,
+      "intervalP95Ms": 264.5549,
+      "intervalMaxMs": 264.79230000000007,
+      "cpuOneCorePercent": 0.7778107283753185,
+      "count": 23,
+      "errors": 0
+    },
+    {
+      "provider": "public ICMP (1 Hz ceiling)",
+      "requestedHz": 1,
+      "observedHz": 0.9894227541429307,
+      "readP50Ms": 6.0190000000000055,
+      "readP95Ms": 8.197999999999865,
+      "intervalP95Ms": 1018.8143,
+      "intervalMaxMs": 1018.8143,
+      "cpuOneCorePercent": 0,
+      "count": 6,
+      "errors": 0
+    }
+  ],
+  "cpu": {
+    "oneCorePercent": 76.94134607060298,
+    "processCountEnd": 7,
+    "scope": "Wiffer + descendant WebView2 processes, debugger attached",
+    "processCountStart": 7,
+    "logicalProcessors": 20,
+    "cpuSeconds": 46.90625,
+    "elapsedSeconds": 60.9560757
+  },
+  "finalPackage": {
+    "checks": [
+      "two digital instruments, no needles",
+      "six stable chart instances",
+      "range and reduced motion",
+      "pause/resume",
+      "both viewport layouts"
+    ],
+    "layouts": [
+      {
+        "width": 1366,
+        "height": 768,
+        "scrollWidth": 1351,
+        "chartBottom": 756
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1905,
+        "chartBottom": 999.609375
+      }
+    ],
+    "pageErrors": []
+  },
+  "speedTest": {
+    "cancelMs": 79,
+    "final": {
+      "downloadBytes": 256000000,
+      "downloadLatencyMs": 66.69155,
+      "downloadMbps": 500.2615869792462,
+      "downloadSeconds": 4.0938582,
+      "elapsedSeconds": 8.7539302,
+      "endpoint": "speed.cloudflare.com",
+      "error": null,
+      "idleLatencyMs": 85.1415,
+      "liveDownloadMbps": null,
+      "liveUploadMbps": null,
+      "phase": "Complete",
+      "progress": 1,
+      "server": "Cloudflare edge / YYZ",
+      "status": "complete",
+      "uploadBytes": 128000000,
+      "uploadLatencyMs": 92.26820000000001,
+      "uploadMbps": 238.63779950966457,
+      "uploadSeconds": 4.2910218
+    }
+  },
+  "limitations": [
+    "Same-PC short observations; workload was not laboratory-controlled.",
+    "rAF callbacks and DOM commits are not GPU presentation.",
+    "CPU includes debugger-attached WebView2 descendants, excludes test harness/compiler.",
+    "Physical network transitions, VPN/multiple adapters, high DPI and second PC unvalidated."
+  ]
+}

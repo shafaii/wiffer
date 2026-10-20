@@ -40,3 +40,7 @@ dotnet publish src/PulseDeck.Windows/PulseDeck.Windows.csproj -c Release -r win-
 ## M0.6 — Wiffer
 
 Premium UI, original vector mascot, dimensional traffic dials, privacy-safe real screenshots, per-user launcher and public source/release packaging. Native M0.5 semantics remain unchanged. Stop before M1.
+
+## M0.7 — Digital cockpit and explicit internet testing
+
+Angular layered digital instruments, a midnight/sky/glacier palette, native bounded Cloudflare HTTPS speed testing, direct GUID-addressed interface counters, immediate incremental traffic delivery and measured diagnostics. All six charts, historical summaries and M0.6 controls remain. The stable local installation is preserved. Stop after M0.7; M1 has not started.

@@ -4,11 +4,11 @@
 
 **Wiffer — Sniff out your network problems.**
 
-A local Windows network instrument with dimensional speedometers, synchronized signal histories and honest measurements. Follow your gateway and internet response times alongside the traffic actually passing through your PC.
+A local Windows network instrument with digital EV-style instruments, synchronized signal histories and honest measurements. Follow your gateway and internet response times alongside the traffic actually passing through your PC.
 
 ## Download
 
-**[Download Wiffer for Windows x64](https://github.com/shafaii/wiffer/releases/latest/download/Wiffer-0.6.0-win-x64.zip)** · [Release notes](https://github.com/shafaii/wiffer/releases/tag/v0.6.0)
+**[Download Wiffer for Windows x64](https://github.com/shafaii/wiffer/releases/download/v0.7.0/Wiffer-0.7.0-win-x64.zip)** · [Release notes](https://github.com/shafaii/wiffer/releases/tag/v0.7.0)
 
 1. Download and extract the **entire ZIP** into a permanent folder.
 2. Run `Wiffer.exe`. Windows 11 x64 and Microsoft Edge WebView2 Evergreen Runtime are required. The .NET runtime is included.
@@ -30,12 +30,16 @@ Copy-Item "$env:LOCALAPPDATA\Programs\Wiffer\Wiffer.lnk" ([Environment]::GetFold
 
 Actual WPF/WebView2 application capture. Solid masks conceal network identifiers; chart values and traffic readings are real, unmodified observations. No synthetic telemetry or replay is used. [Compact 1366×768 capture](docs/screenshots/viewport-1366x768.png).
 
-- **Twin dimensional dials:** instantaneous download/upload Mbps, separate time-weighted averages, growing automatic ranges or fixed scales, eased needles and reduced-motion support.
+- **Digital cockpit:** midnight graphite, sky/glacier blue and icy white; angular instruments with layered depth, illuminated spring-driven arcs, exact instantaneous Mbps and separate weighted averages. Dynamic ranges and reduced-motion support.
+- **On-demand Quick Speed Test:** explicit, bounded native HTTPS transfers to Cloudflare, live and sustained download/upload, idle/loaded HTTP latency, endpoint details, duration, cancel and clear errors. Warns before loading the connection; never runs automatically.
+- **Measured diagnostics:** native cadence/provider time, sample delivery, frame-callback delay and sequence gaps. Direct adapter counter reads and sample-triggered bridge delivery reduce acquisition and queueing work.
 - **Six synchronized charts:** gateway RTT, external RTT, rolling RTT variation, packet-loss events, download and upload. Shared 60-second/5-minute windows, precise hover inspection and expandable charts.
 - **Native connection inspector:** physical adapter, independent Wi-Fi fields, negotiated rates and cumulative interface counters, with explicit unavailable states.
 - **Reliable session controls:** pause, resume, reset and configurable IPv4 probe targets; cancellation never counts as packet loss.
 - **Historical context:** six original troubleshooting summaries, separate from live readings, without invented dates or individual samples.
 - **Local by design:** no account, cloud telemetry, packet inspection, automatic speed test or measurement database. ICMP probes contact the configured endpoints. Assets and fonts are local.
+
+**Quick Speed Test measures internet ↔ PC throughput through Windows routing. It transfers up to 384 MB of payload (+ overhead) and may temporarily increase gaming latency. It is not PC-to-modem LAN capacity; a compatible local endpoint is required for that.** Results include HTTP overhead and can understate very fast connections. [Speed-test interface](docs/screenshots/quick-speed-test.png) · [Observed diagnostics](docs/screenshots/telemetry-diagnostics.png).
 
 **Traffic means LOCAL PC TRAFFIC through the selected physical interface, including LAN traffic and other applications. It is not internet capacity or the negotiated Wi-Fi rate.** A latency spike is an observation, not a diagnosis.
 
@@ -60,11 +64,11 @@ Source solution/project names retain `PulseDeck` to preserve architecture and so
 
 WPF hosts bundled React/TypeScript in WebView2. `src/PulseDeck.Core` owns ICMP, physical-interface byte counters and bounded Native Wi-Fi parsing. Bridge v2 validates both directions: 1 Hz probe/connection snapshots and separate approximately 4 Hz incremental traffic batches. Six stable ECharts instances render bounded histories; JavaScript never generates live measurements.
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for measurement mathematics, security boundaries and lifecycle behavior, [HANDOFF.md](HANDOFF.md) for observed validation, and [ROADMAP.md](ROADMAP.md) for scope. M0.6 stops before M1.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for measurement mathematics, security boundaries and lifecycle behavior, [HANDOFF.md](HANDOFF.md) for observed validation, and [ROADMAP.md](ROADMAP.md) for scope. M0.7 stops before M1.
 
 ## Validation and limits
 
-46 native tests and 12 frontend tests pass. TypeScript, frontend production build, Release solution build and self-contained publication pass. Live checks exercise pause/reset/resume, historical summaries, invalid settings, chart identity and both requested viewport sizes. Frame measurements are browser callback timings, **not GPU present events or a guaranteed 120 FPS claim**.
+61 native tests and 16 frontend tests pass. TypeScript, frontend production build, Release solution build and self-contained publication pass. Live checks exercise pause/reset/resume, historical summaries, invalid settings, chart identity and both requested viewport sizes. Frame measurements are browser callback timings, **not GPU present events or a guaranteed 120 FPS claim**.
 
 Unsupported Wi-Fi fields stay unavailable. Driver retry/frame-failure counters, IPv6/DNS targets, persistence and recording are outside this release. Task Manager agreement, physical network transitions, VPN/multiple-adapter configurations, high-DPI layouts, long-duration soak and clean second-PC deployment still require manual validation.
 

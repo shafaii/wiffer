@@ -11,12 +11,18 @@ public sealed class WindowsNetworkProvider : INetworkProvider, ITrafficProvider
 {
     [DllImport("iphlpapi.dll", ExactSpelling = true)] private static extern int GetBestInterface(uint destination, out uint bestInterfaceIndex);
     [DllImport("iphlpapi.dll", ExactSpelling = true)] private static extern uint GetIfEntry2(ref InterfaceRow row);
+    [DllImport("iphlpapi.dll", ExactSpelling = true)] private static extern uint ConvertInterfaceGuidToLuid(in Guid guid, out ulong luid);
     // MIB_IF_ROW2, Windows SDK default 8-byte packing. Only fields used here are projected.
     [StructLayout(LayoutKind.Explicit, Size = 1352)]
     private struct InterfaceRow
     {
+        [FieldOffset(0)] public ulong Luid;
         [FieldOffset(8)] public uint Index;
+        [FieldOffset(12)] public Guid Guid;
         [FieldOffset(1152)] public byte Flags;
+        [FieldOffset(1156)] public uint OperationalStatus;
+        [FieldOffset(1208)] public ulong InOctets;
+        [FieldOffset(1280)] public ulong OutOctets;
     }
     public NetworkState Read()
     {
@@ -61,9 +67,15 @@ public sealed class WindowsNetworkProvider : INetworkProvider, ITrafficProvider
     }
     InterfaceCounters ITrafficProvider.Read(string adapterId)
     {
-        var nic = NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault(n => n.Id == adapterId);
-        if (nic is null || nic.OperationalStatus != OperationalStatus.Up) throw new InvalidOperationException("Selected adapter disconnected or was removed");
-        var stats = nic.GetIPStatistics();
-        return new(nic.Id, stats.BytesReceived, stats.BytesSent);
+        // Resolve identity every time: interface indexes can be reused after removal.
+        // GetIfEntry2 reads the same interface octet counters without enumerating all adapters.
+        if (!Guid.TryParse(adapterId, out var guid) || ConvertInterfaceGuidToLuid(in guid, out var luid) != 0)
+            throw new InvalidOperationException("Selected adapter was removed or replaced");
+        var row = new InterfaceRow { Luid = luid };
+        if (GetIfEntry2(ref row) != 0 || row.Guid != guid || row.OperationalStatus != 1 || (row.Flags & 3) != 1)
+            throw new InvalidOperationException("Selected physical adapter is unavailable or disconnected");
+        if (row.InOctets > long.MaxValue || row.OutOctets > long.MaxValue)
+            throw new InvalidOperationException("Interface counters exceed the supported signed range");
+        return new(adapterId, (long)row.InOctets, (long)row.OutOctets);
     }
 }
