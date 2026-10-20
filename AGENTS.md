@@ -22,3 +22,5 @@ Observed M0.7 validation: 61 native and 16 frontend tests pass; TypeScript, prod
 - Send traffic on sample completion with a coalesced dispatcher callback. Diagnostics distinguish monotonic native timing, wall-clock bridge estimates and rAF opportunities; none establishes GPU presentation.
 - Digital arcs use display-only critically damped springs. Exact instantaneous and weighted average numbers never interpolate.
 Final WebView2 validation passed at 1366×768 and 1920×1080 with six stable charts. Final sample → JavaScript wall-clock p95 was 1 ms at each viewport, with zero observed batch gaps; rAF p95 was 6.7/7.2 ms and does not establish GPU presentation. Full data and remaining limitations are in HANDOFF.md.
+
+M0.7 publication is verified: public v0.7.0 release, all 430 ZIP entries compared to the tested package, and unauthenticated downloaded ZIP/checksum agreement. Stable installed executable and shortcut checksums remain unchanged. Stop after M0.7.

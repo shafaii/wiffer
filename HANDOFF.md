@@ -63,3 +63,15 @@ Repository: https://github.com/shafaii/wiffer
 Release target: https://github.com/shafaii/wiffer/releases/tag/v0.7.0
 
 Windows x64 ZIP includes the self-contained .NET runtime, local assets, licenses and optional per-user install script. WebView2 Evergreen is still required. The build is unsigned. SHA256SUMS.txt accompanies the release. Publication and downloaded-asset verification are recorded below after upload.
+
+## Publication verification
+
+Published 2026-10-20 (America/Toronto): https://github.com/shafaii/wiffer/releases/tag/v0.7.0 .
+
+Release source/tag commit: 0077358897d2827dafd7ee425539778cc18357fc. The public Windows ZIP is 66,139,015 bytes. All 430 archived files were compared with the tested package before upload. An unauthenticated public download matched both the local archive and the published SHA256SUMS.txt:
+
+```text
+1f9cf931ed16018c3086c0010f8a07e853605820424c8de5789e69dd94050948  Wiffer-0.7.0-win-x64.zip
+```
+
+The release is public, non-draft and non-prerelease. The stable installed executable and installation-folder shortcut still match their preserved checksums. No desktop shortcut was overwritten. The verification app is closed; temporary debugging was only configured in the verification launcher, never in the app or normal shortcut.
