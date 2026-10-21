@@ -1,0 +1,168 @@
+{
+  "checks": [
+    {
+      "fixture": {
+        "state": "Stable",
+        "rssi": -60,
+        "quality": 80
+      },
+      "result": {
+        "state": "Stable",
+        "field": 0.6666666666666666,
+        "link": 0.8,
+        "rssi": "true",
+        "quality": "true",
+        "signal": "0",
+        "light": "0.68",
+        "slash": "none",
+        "pending": "none"
+      }
+    },
+    {
+      "fixture": {
+        "state": "Degraded",
+        "rssi": -83,
+        "quality": 25
+      },
+      "result": {
+        "state": "Degraded",
+        "field": 0.2833333333333333,
+        "link": 0.25,
+        "rssi": "true",
+        "quality": "true",
+        "signal": "0",
+        "light": "0.2125",
+        "slash": "none",
+        "pending": "none"
+      }
+    },
+    {
+      "fixture": {
+        "state": "Reconnecting",
+        "rssi": null,
+        "quality": null
+      },
+      "result": {
+        "state": "Reconnecting",
+        "field": 0,
+        "link": 0,
+        "rssi": "false",
+        "quality": "false",
+        "signal": "0",
+        "light": "0",
+        "slash": "none",
+        "pending": "block"
+      }
+    },
+    {
+      "fixture": {
+        "state": "Disconnected",
+        "rssi": null,
+        "quality": null
+      },
+      "result": {
+        "state": "Disconnected",
+        "field": 0,
+        "link": 0,
+        "rssi": "false",
+        "quality": "false",
+        "signal": "0",
+        "light": "0",
+        "slash": "block",
+        "pending": "none"
+      }
+    },
+    {
+      "fixture": {
+        "state": "Stale",
+        "rssi": -60,
+        "quality": 80
+      },
+      "result": {
+        "state": "Stale",
+        "field": 0,
+        "link": 0,
+        "rssi": "false",
+        "quality": "false",
+        "signal": "0",
+        "light": "0",
+        "slash": "none",
+        "pending": "block"
+      }
+    },
+    {
+      "fixture": {
+        "state": "Unavailable",
+        "rssi": null,
+        "quality": null
+      },
+      "result": {
+        "state": "Unavailable",
+        "field": 0,
+        "link": 0,
+        "rssi": "false",
+        "quality": "false",
+        "signal": "0",
+        "light": "0",
+        "slash": "none",
+        "pending": "none"
+      }
+    },
+    {
+      "fixture": {
+        "state": "Paused",
+        "rssi": -60,
+        "quality": 80
+      },
+      "result": {
+        "state": "Paused",
+        "field": 0,
+        "link": 0,
+        "rssi": "false",
+        "quality": "false",
+        "signal": "0",
+        "light": "0",
+        "slash": "none",
+        "pending": "none"
+      }
+    },
+    {
+      "fixture": {
+        "state": "Stable",
+        "rssi": null,
+        "quality": 80
+      },
+      "result": {
+        "state": "Stable",
+        "field": 0,
+        "link": 0.8,
+        "rssi": "false",
+        "quality": "true",
+        "signal": "0",
+        "light": "0.68",
+        "slash": "none",
+        "pending": "none"
+      }
+    },
+    {
+      "fixture": {
+        "state": "Stable",
+        "rssi": -60,
+        "quality": null
+      },
+      "result": {
+        "state": "Stable",
+        "field": 0.6666666666666666,
+        "link": 0,
+        "rssi": "true",
+        "quality": "false",
+        "signal": "0",
+        "light": "0",
+        "slash": "none",
+        "pending": "none"
+      }
+    }
+  ],
+  "motion": "spring converges after change; live reduced-motion preference snaps to targets",
+  "scope": "Isolated UI fixtures. No native telemetry injected; no physical disconnect performed."
+}

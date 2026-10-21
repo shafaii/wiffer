@@ -111,7 +111,7 @@ export function App() {
   const state = !snapshot ? 'Awaiting desktop' : stale ? 'Host connection lost' : snapshot.paused ? 'Paused' : snapshot.network.error ? 'Detection unavailable' : !connected ? 'Disconnected' : 'Monitoring';
   useEffect(() => { const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') setExpanded(null); }; window.addEventListener('keydown', escape); return () => window.removeEventListener('keydown', escape); }, []);
   return <div className="app-shell">
-    <header className="topbar"><div className="brand"><img className="brand-icon" src="/wiffer.svg" alt="Wiffer detective mascot" /><span>Wiffer<small>SNIFF OUT YOUR NETWORK PROBLEMS.</small></span><span className="edition">M0.8</span></div>
+    <header className="topbar"><div className="brand"><img className="brand-icon" src="/wiffer.svg" alt="Wiffer detective mascot" /><span>Wiffer<small>SNIFF OUT YOUR NETWORK PROBLEMS.</small></span><span className="edition">M0.8.2</span></div>
       <nav aria-label="Main views"><button className={page === 'live' ? 'active' : ''} onClick={() => setPage('live')}>Instruments</button><button className={page === 'wifi' ? 'active' : ''} onClick={() => setPage('wifi')}>Wi-Fi Lab</button><button className={page === 'history' ? 'active' : ''} onClick={() => setPage('history')}>Historical context <span className="count">6</span></button></nav>
       <div className="header-tools"><span className="local-label">ON DEVICE / WINDOWS</span><button aria-label="Measurement settings" disabled={!snapshot} onClick={() => setSettings(true)}><Glyph name="settings" /></button></div>
     </header>

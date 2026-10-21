@@ -1,4 +1,82 @@
-# Wiffer M0.8 handoff — Wi-Fi Lab
+# Wiffer M0.8.2 handoff — Wireless Halo
+
+Validated 2026-10-21 (America/Toronto). Complete; stop after M0.8.2. No M1, radio writes, installation changes or GitHub release.
+
+## Delivered and local launch
+
+Replaced only the hero artwork with a luminous layered SVG orb, occluded orbital rings and a calibrated circular halo. Quality maps linearly to clockwise circumference from the top marker: 82% is 82 of 100 path units. Quality independently controls orb/bloom intensity and a small deterministic orbital tilt through the existing critically damped spring. No random motion, perpetual rotation, particles, generic Wi-Fi arcs or new dependencies. RSSI remains an exact separate dBm reading and never implies distance.
+
+Quality display categories: excellent ≥80%, good ≥60%, fair ≥40%, weak <40%. These are presentation thresholds, not reliability guarantees; existing RSSI/weakening diagnostics remain separate. Connection/freshness states override cached quality: reconnecting shows a segmented ring, disconnected a slash, stale a dotted calibration track, unavailable a sparse track, paused pause bars. Missing quality suppresses live fill/light even when RSSI is present; quality zero remains a real zero. Reduced motion snaps to measurements; otherwise motion settles and stops, including while hidden. Exact numeric readings never interpolate.
+
+Charts, native telemetry, bridge, inspector fields, other tabs and Quick Speed Test implementations are preserved. Only the inspector's hero-mapping explanation and version identification were updated alongside the hero.
+
+Exact local launch path (development build, separate from stable installation):
+
+`C:\Users\shafa\OneDrive\Documents\ChatGPT\pulsedeck\src\PulseDeck.Windows\bin\Release\net10.0-windows\Wiffer.exe`
+
+## Verification
+
+- Required TypeScript check, frontend tests/build, native tests and Release solution build pass: **26 frontend / 70 native tests**, zero failures/skips. Final Release build has zero warnings/errors. Four focused tests cover linear mapping including 82%, bounds, invalid/missing values, category boundaries and connection-state priority. Existing spring/state/native tests remain passing.
+- Actual WebView2 checks pass at **1366×768 and 1920×1080**: exact native numbers/timestamps, computed calibrated stroke matching reported quality, four stable charts, both history windows, pause/resume with frozen acquisition, reduced motion and all 17 inspector fields. No page errors or horizontal overflow. Charts end at 701 / 1001 px. Both screenshots were visually inspected, with the hero, four charts and collapsed inspector visible. Actual captures show 81% and −62 dBm; these are this PC's observations.
+- Nine isolated state/availability fixtures pass, including disconnected/reconnecting/stale, missing RSSI versus missing quality, spring convergence and live reduced-motion changes. They never inject telemetry into the native application. Physical network disruption was not induced.
+- [1366×768 screenshot](docs/screenshots/m082-wifi-lab-1366x768.png) · [1920×1080 screenshot](docs/screenshots/m082-wifi-lab-1920x1080.png) · [Paused](docs/screenshots/m082-paused.png) · [Native checks](docs/screenshots/m082-validation.json) · [State fixtures](docs/screenshots/m082-state-validation.json).
+
+Commands: `npm --prefix ui run check`; `npm --prefix ui test`; `npm --prefix ui run build`; `dotnet test PulseDeck.slnx --no-restore -m:1 -p:UseSharedCompilation=false`; `dotnet build PulseDeck.slnx -c Release --no-restore -m:1 -p:UseSharedCompilation=false`. Opt-in browser scripts: `scripts/verify-wireless-halo.cjs` and `scripts/verify-halo-states.cjs`, using the existing temporary localhost debugger/isolated profile and Playwright dependency.
+
+## Limits and preservation
+
+This focused validation uses short 3-second native capture windows, not a new performance benchmark. Recorded rAF intervals are callback opportunities, not GPU presentation or sustained-FPS evidence. Physical disconnect/roaming, MLO, high-DPI, long soak and second-PC scenarios remain unvalidated. No live bandwidth-consuming speed test was rerun; native tests pass and its code is unchanged. Existing upstream Zod notices and Vite bundle warning (~891 KB JS) remain.
+
+The initial build encountered an already-running repository executable lock; closing that development instance and rebuilding resolved it. The calibration validator was corrected to parse Chromium's `calc(...)` computed stroke format. Final sequential validation passed. Temporary debugging is not configured in normal startup. Stable installation, desktop shortcuts and prior milestone evidence remain untouched. No commit, push or release was performed. No implementation work remains for this milestone.
+
+---
+
+# Wiffer M0.8.1 handoff — single Wi-Fi hero
+
+Validated 2026-10-21 (America/Toronto). M0.8.1 is complete. Stop here; no M1 or band switching. The public release remains M0.7; no release, install, shortcut update, commit or push was performed for this redesign.
+
+## Delivered
+
+- Removed the radar and connection bridge. One bespoke layered SVG Wi-Fi symbol now anchors a quiet graphite canvas, with glacier-blue surfaces, restrained highlights and shallow depth. The hero shows only a short state plus exact quality/RSSI readings.
+- Genuine RSSI drives centered inner-to-outer arc coverage; independent reported quality controls a separate edge-light layer. Reported band subtly affects finish. The existing spring/damper loop interpolates display values only, stops when settled/hidden and honors live reduced-motion changes. No randomized or perpetual animation, distance model or fabricated telemetry.
+- Disconnected has a slash; reconnecting has an incomplete static ring; stale has a faint silhouette and dotted ring; unavailable has an outlined anchor; paused has pause bars. Inactive numerical readings are dashes. Missing RSSI/quality independently suppress their layers. The existing weakening/degraded state thresholds remain unchanged.
+- Preserved all four historical charts, linked windows/hover, exact samples, native timestamps and bounded histories. Removed decorative chart numbering and captions. All technical fields and explanations are accessible in the collapsed 17-field inspector.
+- NativeWifi, bridge v2, polling, traffic counters, probe lifecycle, cockpit, Quick Speed Test and historical records retain their implementations. App badge/Windows version is M0.8.1 / 0.8.1. No new runtime dependencies.
+
+## Validation and actual screenshots
+
+All required commands passed: `npm --prefix ui run check`, `npm --prefix ui test`, `npm --prefix ui run build`, `dotnet test PulseDeck.slnx --no-restore -m:1 -p:UseSharedCompilation=false`, and `dotnet build PulseDeck.slnx -c Release --no-restore -m:1 -p:UseSharedCompilation=false`. **70 native and 22 frontend tests passed**, no failures/skips. Final Release build: zero warnings/errors. Production JS is approximately 890 KB; existing Vite chunk-size and upstream Zod annotation warnings remain.
+
+Real packaged WebView2/native checks passed at both exact CSS viewports: one hero, exact native RSSI/quality and completion timestamp, four stable chart identities across viewport/window changes and pause/resume, paused observation freeze, reduced motion snapping to native targets, inspector expansion and no page errors/horizontal overflow. Final screenshots were visually inspected. The complete hero, four charts and collapsed inspector fit at both sizes; the expanded inspector scrolls.
+
+- [1366×768 native capture](docs/screenshots/m081-wifi-lab-1366x768.png)
+- [1920×1080 native capture](docs/screenshots/m081-wifi-lab-1920x1080.png)
+- [Actual paused state](docs/screenshots/m081-paused.png)
+- [Native validation and timing](docs/screenshots/m081-validation.json)
+- [Isolated state validation](docs/screenshots/m081-state-validation.json)
+
+The native captures show actual −61 dBm / 82% observations; quality changed during the observation windows. Identifier masks hide routing information without changing measurements. `scripts/verify-wifi-lab.cjs` captures only genuine bridge data. `scripts/verify-wifi-states.cjs` separately bundles an explicitly labeled test fixture in ignored artifacts and exercises nine combinations: stable, degraded, reconnecting, disconnected, stale, unavailable, paused, RSSI missing and quality missing. It checks independent suppression, distinct state glyphs, spring convergence and live reduced-motion changes in headless Edge. Disconnected/stale fixture screenshots were visually inspected. Fixture data never enters the production app or native bridge.
+
+The preserved cockpit regression harness also passed: pause freezes probes/traffic/clock/statistics, reset/resume, all six imported summaries, duplicate-target rejection, shared windows/expansion with six stable chart instances, and both viewport layouts. Chart bottoms were 756 / 999.61 px. No page errors. [Regression aggregate](docs/screenshots/m081-regression.json). Its separate 30-second cockpit windows measured rAF median/p95 4.2/17.5 ms and 4.2/8.5 ms; these are callback opportunities under uncontrolled desktop load, not GPU presentation. Regression raw snapshots and screenshots remain ignored locally.
+
+## Measured frame opportunities
+
+Final 30-second real WebView2 windows, with debugger attached:
+
+- 1366×768: 7085 rAF callbacks; median/p95 4.2/4.3 ms; maximum 20.6 ms. 29 distinct native observations; cadence median/p95 1001/1012 ms. Native completion → JS receipt wall-clock median/p95 450/853 ms. Charts end at 701 px.
+- 1920×1080: 7146 rAF callbacks; median/p95 4.2/4.3 ms; maximum 20.7 ms. 29 distinct native observations; cadence median/p95 1001/1018 ms, maximum 1985 ms. Native completion → JS receipt wall-clock median/p95 505/948 ms. Charts end at 1001 px.
+
+These are callback opportunities, not GPU presentation or a sustained FPS guarantee. No new process-CPU, battery or long-soak benchmark was performed. The existing independent acquisition/snapshot timing can delay or coalesce observations; native timestamps remain exact and duplicate observations are not new samples. No new delivery-latency claim is made.
+
+## Limitations and preservation
+
+Physical disconnect/reconnect and roaming were not induced. Their state visuals are covered by isolated fixtures and existing state/parser tests, not hardware verification. MLO, alternate adapters/VPN routing, privacy-policy changes, high-DPI and clean second-PC execution remain unvalidated. A live bandwidth-consuming Quick Speed Test was not rerun; its implementation is unchanged and native regression tests pass. Native synchronous driver-call limitations remain as documented below.
+
+Tests required local IPC and the opt-in localhost WebView debugger outside the restricted sandbox. Temporary debug settings are confined to the verification launcher/profile. An early build was attempted before the frontend build finished; rerunning after completion passed. Stable installation and desktop shortcuts were not targeted or modified. All prior M0.7/M0.8 captures and validation files remain intact; additional raw/fixture evidence stays in ignored artifacts.
+
+---
+
+# Preserved M0.8 handoff — historical validation
 
 Validated 2026-10-21 (America/Toronto). M0.8 is a source milestone; the public packaged release remains M0.7. Stop after M0.8. Band switching and M1 are not implemented.
 

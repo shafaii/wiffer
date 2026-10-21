@@ -83,3 +83,25 @@ Unsupported Wi-Fi fields stay unavailable. Driver retry/frame-failure counters, 
 ## License
 
 [MIT](LICENSE) for original code and artwork. [Third-party notices](THIRD-PARTY-NOTICES.md) and full dependency licenses are included with the source and release.
+
+
+## In action: Downloading a game
+
+![Wiffer monitoring a game download](docs/screenshots/game-download-example.png)
+
+During a real game download, Wiffer observed approximately
+492 Mbps of incoming PC network traffic, alongside fluctuations
+in gateway and external internet latency.
+
+The synchronized charts showed:
+- Sustained download activity in the hundreds of Mbps.
+- Gateway and internet response-time spikes.
+- Changing RTT variation (jitter).
+- 0% observed ICMP packet loss in the displayed window.
+
+This illustrates why high download speeds do not necessarily
+mean consistently low gaming latency. Wiffer displays these
+measurements together without assuming that correlation proves
+the cause.
+
+*Real measurements from one Windows PC; results will vary.*
