@@ -1,3 +1,4 @@
+import { wifiHistory } from './wifiModel';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { speedTestStore } from './SpeedTest';
 import { telemetry } from './TelemetryDiagnostics';
@@ -21,7 +22,7 @@ export function useMonitor() {
       const message = parsed.data;
       if (message.type === 'traffic') { telemetry.accept(message.batch, message.timing); trafficStore.accept(message.batch); }
       if (message.type === 'speedTest') speedTestStore.accept(message.state);
-      if (message.type === 'snapshot') setSnapshot(message.snapshot);
+      if (message.type === 'snapshot') { wifiHistory.accept(message.snapshot); setSnapshot(message.snapshot); }
       if (message.type === 'error') setError(message.message);
       if ((message.type === 'ack' || message.type === 'error') && active.current?.id === message.id) {
         clearTimeout(active.current.timer); active.current.resolve(message.type === 'ack'); active.current = null; setPending(false);

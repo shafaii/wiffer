@@ -4,10 +4,11 @@ public enum ProbeStatus { Success, Timeout, Error }
 public sealed record ProbeResult(ProbeStatus Status, double? RttMs, string? Error = null);
 public sealed record Sample(DateTimeOffset Timestamp, string Destination, double? RttMs, ProbeStatus Status, string? Error);
 public sealed record AdapterInfo(string Id, string Name, string Address, string Gateway);
-public sealed record WifiInfo(string? Ssid, string? Band, int? Channel, int? RssiDbm, uint? SignalQuality, double? RxLinkMbps, double? TxLinkMbps, string? UnavailableReason);
+public sealed record WifiInfo(string? Ssid, string? Band, int? Channel, int? RssiDbm, uint? SignalQuality, double? RxLinkMbps, double? TxLinkMbps, string? UnavailableReason,
+    string? State = null, string? Bssid = null, string? RadioType = null, string? Authentication = null, string? Cipher = null, string? ConnectionMode = null, string? Mac = null);
 public sealed record ConnectionInfo(string Type, string OperationalState, string Selection, string? BytesReceived, string? BytesSent,
     string? ReceiveErrors, string? SendErrors, string? ReceiveDiscards, string? SendDiscards, string? CounterError, WifiInfo? Wifi);
-public sealed record NetworkState(bool Connected, string? AdapterId, string AdapterName, string? Gateway, AdapterInfo[] Adapters, string? Error = null, ConnectionInfo? Details = null);
+public sealed record NetworkState(bool Connected, string? AdapterId, string AdapterName, string? Gateway, AdapterInfo[] Adapters, string? Error = null, ConnectionInfo? Details = null, DateTimeOffset? ObservedAt = null);
 public sealed record MonitorSettings(string? GatewayOverride = null, string InternetTarget = "1.1.1.1", int TimeoutMs = 2500);
 public sealed record Metrics(int Sent, int Successful, int Timeouts, int Errors, double? LossPercent, double? Min, double? Average, double? Max, double? Median, double? P95, double? Variation);
 public sealed record EndpointSnapshot(string Id, string? Target, Sample[] Samples, Metrics Stats60, Metrics Stats300);

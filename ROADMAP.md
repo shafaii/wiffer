@@ -43,4 +43,8 @@ Premium UI, original vector mascot, dimensional traffic dials, privacy-safe real
 
 ## M0.7 — Digital cockpit and explicit internet testing
 
-Angular layered digital instruments, a midnight/sky/glacier palette, native bounded Cloudflare HTTPS speed testing, direct GUID-addressed interface counters, immediate incremental traffic delivery and measured diagnostics. All six charts, historical summaries and M0.6 controls remain. The stable local installation is preserved. Stop after M0.7; M1 has not started.
+Angular layered digital instruments, a midnight/sky/glacier palette, native bounded Cloudflare HTTPS speed testing, direct GUID-addressed interface counters, immediate incremental traffic delivery and measured diagnostics. All six charts, historical summaries and M0.6 controls remain. The stable local installation is preserved. M0.7 was completed before the separately authorized M0.8 work; M1 has not started.
+
+## M0.8 — Wi-Fi Lab
+
+Two synchronized native-radio instruments: a calibrated RSSI signal radar and dimensional PC-to-access-point bridge, four bounded history charts and a technical association inspector. Display-only critically damped motion is decoupled from approximately 1 Hz serialized Windows polling. Missing, stale, reconnecting and disconnected data are explicit. No band switching, traffic analysis, release publication or M1 work is included. This milestone supersedes the earlier stop-after-M0.7 instruction; stop after M0.8.

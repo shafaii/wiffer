@@ -7,6 +7,15 @@ namespace PulseDeck.Core;
 // Bounded parsers are separated from P/Invoke so malformed/short driver responses can be tested.
 public static class WifiParser
 {
+    public static string? State(uint value) => value switch { 0 => "unavailable", 1 => "connected", 2 => "ad-hoc", 3 => "disconnecting", 4 => "disconnected", 5 => "associating", 6 => "discovering", 7 => "authenticating", _ => null };
+    private static string EnumLabel(uint value, params string[] names) => value < names.Length ? names[value] : $"Unknown ({value})";
+    public static WifiInfo Complete(WifiInfo info, string? finalState, string? initialBssid)
+    {
+        if ((finalState is not null && finalState != "connected") ||
+            (initialBssid is not null && info.Bssid is not null && initialBssid != info.Bssid))
+            return new(null, null, null, null, null, null, null, "Connection changed during radio query; awaiting a consistent observation", State: finalState);
+        return info with { State = finalState ?? info.State };
+    }
     private static uint U(ReadOnlySpan<byte> data, int offset) => BinaryPrimitives.ReadUInt32LittleEndian(data[offset..]);
     public static WifiInfo Realtime(ReadOnlySpan<byte> data)
     {
@@ -34,7 +43,12 @@ public static class WifiParser
         catch (DecoderFallbackException) { name = "0x" + Convert.ToHexString(ssid); }
         name = new string(name.Select(c => char.IsControl(c) ? '\uFFFD' : c).ToArray());
         return new(name.Length == 0 ? null : name, null, null, null, U(data, 576), U(data, 580) == 0 ? null : U(data, 580) / 1000d,
-            U(data, 584) == 0 ? null : U(data, 584) / 1000d, null);
+            U(data, 584) == 0 ? null : U(data, 584) / 1000d, null,
+            State: "connected", Bssid: data.Slice(560, 6).IndexOfAnyExcept((byte)0) < 0 ? null : string.Join(":", data.Slice(560, 6).ToArray().Select(b => b.ToString("X2"))),
+            RadioType: EnumLabel(U(data, 568), "Unknown", "FHSS", "DSSS", "IR baseband", "802.11a", "802.11b", "802.11g", "802.11n", "802.11ac", "802.11ad", "802.11ax", "802.11be"),
+            Authentication: EnumLabel(U(data, 596), "Unknown", "Open", "Shared key", "WPA Enterprise", "WPA Personal", "WPA none", "WPA2 Enterprise", "WPA2 Personal", "WPA3 Enterprise 192-bit", "WPA3 SAE", "OWE", "WPA3 Enterprise"),
+            Cipher: U(data, 600) switch { 0 => "None", 1 => "WEP-40", 2 => "TKIP", 4 => "CCMP", 5 => "WEP-104", 6 => "BIP", 8 => "GCMP", 9 => "GCMP-256", 10 => "CCMP-256", 0x101 => "WEP", var v => $"Unknown ({v})" },
+            ConnectionMode: EnumLabel(U(data, 4), "Profile", "Temporary profile", "Discovery secure", "Discovery unsecure", "Automatic", "Invalid"));
     }
 }
 
@@ -66,10 +80,16 @@ public static class NativeWifi
                 }
                 finally { if (pointer != IntPtr.Zero) WlanFreeMemory(pointer); }
             }
+            string? ReadState() => Query(6, "Interface state") is { Length: >= 4 } state ? WifiParser.State(BinaryPrimitives.ReadUInt32LittleEndian(state)) : null;
+            var before = ReadState();
+            if (before is not null && before != "connected") return info with { State = before, UnavailableReason = "Wi-Fi interface is " + before };
+            string? initialBssid = null;
+            if (Query(7, "Association identity") is { } initial)
+                try { initialBssid = WifiParser.Connection(initial).Bssid; } catch (ArgumentException ex) { notes.Add(ex.Message); }
             if (Query(19, "Real-time radio quality") is { } realtime)
                 try { info = WifiParser.Realtime(realtime); } catch (ArgumentException ex) { notes.Add(ex.Message); }
             if (Query(7, "SSID / association") is { } connection)
-                try { var c = WifiParser.Connection(connection); info = info with { Ssid = c.Ssid, SignalQuality = info.SignalQuality ?? c.SignalQuality, RxLinkMbps = info.RxLinkMbps ?? c.RxLinkMbps, TxLinkMbps = info.TxLinkMbps ?? c.TxLinkMbps }; } catch (ArgumentException ex) { notes.Add(ex.Message); }
+                try { var c = WifiParser.Connection(connection); info = info with { Ssid = c.Ssid, State = c.State, Bssid = c.Bssid, RadioType = c.RadioType, Authentication = c.Authentication, Cipher = c.Cipher, ConnectionMode = c.ConnectionMode, SignalQuality = info.SignalQuality ?? c.SignalQuality, RxLinkMbps = info.RxLinkMbps ?? c.RxLinkMbps, TxLinkMbps = info.TxLinkMbps ?? c.TxLinkMbps }; } catch (ArgumentException ex) { notes.Add(ex.Message); }
             var multipleLinks = info.UnavailableReason?.StartsWith("Multiple Wi-Fi", StringComparison.Ordinal) == true;
             if (!multipleLinks && info.RssiDbm is null && Query(0x10000102, "RSSI") is { Length: >= 4 } rssi)
             {
@@ -82,6 +102,8 @@ public static class NativeWifi
                 if (ch is > 0 and <= 233) info = info with { Channel = (int)ch };
                 // A channel number alone cannot distinguish 2.4/5/6 GHz.
             }
+            var after = ReadState();
+            info = WifiParser.Complete(info, after ?? before, initialBssid);
         }
         catch (Exception ex) when (ex is ArgumentException or InvalidOperationException or DllNotFoundException or EntryPointNotFoundException) { notes.Add(ex.Message); }
         finally { if (handle != IntPtr.Zero) WlanCloseHandle(handle, IntPtr.Zero); }

@@ -9,6 +9,7 @@ namespace PulseDeck.Core;
 [SupportedOSPlatform("windows")]
 public sealed class WindowsNetworkProvider : INetworkProvider, ITrafficProvider
 {
+    private string? _lastWifiId;
     [DllImport("iphlpapi.dll", ExactSpelling = true)] private static extern int GetBestInterface(uint destination, out uint bestInterfaceIndex);
     [DllImport("iphlpapi.dll", ExactSpelling = true)] private static extern uint GetIfEntry2(ref InterfaceRow row);
     [DllImport("iphlpapi.dll", ExactSpelling = true)] private static extern uint ConvertInterfaceGuidToLuid(in Guid guid, out ulong luid);
@@ -46,8 +47,15 @@ public sealed class WindowsNetworkProvider : INetworkProvider, ITrafficProvider
         }
         var selected = candidates.OrderByDescending(c => result == 0 && c.Index == best).ThenBy(c => c.Index).FirstOrDefault();
         var anyUp = adapters.Any(n => n.OperationalStatus == OperationalStatus.Up && n.NetworkInterfaceType != NetworkInterfaceType.Loopback);
-        if (selected.Info is null) return new(anyUp, null, anyUp ? "Physical adapter unavailable" : "No active network", null, [],
-            anyUp ? "No operational physical IPv4 adapter with a gateway was found. Local traffic is unavailable; configured ICMP targets still use Windows routing." : null);
+        if (selected.Info is null)
+        {
+            // Retain only the previously selected physical Wi-Fi identity for read-only reconnect state.
+            // It must not become a traffic/probe route before Windows supplies an operational gateway.
+            var previous = adapters.FirstOrDefault(n => n.Id == _lastWifiId && n.NetworkInterfaceType == NetworkInterfaceType.Wireless80211);
+            return new(anyUp, null, previous?.Name ?? (anyUp ? "Physical adapter unavailable" : "No active network"), null, [],
+                anyUp ? "No operational physical IPv4 adapter with a gateway was found. Local traffic is unavailable; configured ICMP targets still use Windows routing." : null,
+                previous is null ? null : new("Wi-Fi", previous.OperationalStatus.ToString(), "Previously selected Wi-Fi; awaiting an operational IPv4 route", null, null, null, null, null, null, null, NativeWifi.Read(previous.Id)));
+        }
         string? rx = null, tx = null, re = null, te = null, rd = null, td = null, counterError = null;
         try
         {
@@ -59,11 +67,13 @@ public sealed class WindowsNetworkProvider : INetworkProvider, ITrafficProvider
         }
         catch (Exception ex) when (ex is NetworkInformationException or PlatformNotSupportedException) { counterError = ex.Message; }
         var wifi = selected.Nic.NetworkInterfaceType == NetworkInterfaceType.Wireless80211;
+        _lastWifiId = wifi ? selected.Info.Id : null;
+        var mac = selected.Nic.GetPhysicalAddress().GetAddressBytes();
         var selection = result == 0 && selected.Index == best ? "Physical adapter on Windows route to 1.1.1.1" :
             "Physical gateway fallback; Windows route may use a VPN or another adapter";
         return new(true, selected.Info.Id, selected.Info.Name, selected.Info.Gateway, candidates.Select(c => c.Info).ToArray(), null,
             new(wifi ? "Wi-Fi" : selected.Nic.NetworkInterfaceType.ToString(), selected.Nic.OperationalStatus.ToString(), selection,
-                rx, tx, re, te, rd, td, counterError, wifi ? NativeWifi.Read(selected.Info.Id) : null));
+                rx, tx, re, te, rd, td, counterError, wifi ? NativeWifi.Read(selected.Info.Id) with { Mac = mac.Length == 6 ? string.Join(":", mac.Select(b => b.ToString("X2"))) : null } : null));
     }
     InterfaceCounters ITrafficProvider.Read(string adapterId)
     {

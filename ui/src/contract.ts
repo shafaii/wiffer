@@ -6,7 +6,11 @@ const timestamp = z.string().datetime({ offset: true });
 const counter = z.string().regex(/^\d{1,20}$/).nullable();
 export const wifiSchema = z.object({ ssid: z.string().max(128).nullable(), band: z.enum(['2.4 GHz', '5 GHz', '6 GHz']).nullable(),
   channel: z.number().int().min(1).max(233).nullable(), rssiDbm: z.number().int().min(-127).max(-1).nullable(), signalQuality: z.number().int().min(0).max(100).nullable(),
-  rxLinkMbps: nullableMetric, txLinkMbps: nullableMetric, unavailableReason: z.string().nullable() }).strict();
+  rxLinkMbps: nullableMetric, txLinkMbps: nullableMetric, unavailableReason: z.string().nullable(),
+  state: z.enum(['unavailable', 'connected', 'ad-hoc', 'disconnecting', 'disconnected', 'associating', 'discovering', 'authenticating']).nullable().default(null),
+  bssid: z.string().regex(/^([0-9A-F]{2}:){5}[0-9A-F]{2}$/).nullable().default(null), mac: z.string().regex(/^([0-9A-F]{2}:){5}[0-9A-F]{2}$/).nullable().default(null),
+  radioType: z.string().max(64).nullable().default(null), authentication: z.string().max(64).nullable().default(null), cipher: z.string().max(64).nullable().default(null), connectionMode: z.string().max(64).nullable().default(null) }).strict();
+export type Wifi = z.infer<typeof wifiSchema>;
 const detailsSchema = z.object({ type: z.string(), operationalState: z.string(), selection: z.string(), bytesReceived: counter, bytesSent: counter,
   receiveErrors: counter, sendErrors: counter, receiveDiscards: counter, sendDiscards: counter, counterError: z.string().nullable(), wifi: wifiSchema.nullable() }).strict();
 export const trafficSampleSchema = z.object({ sequence: nonnegative.int().safe(), timestamp, elapsedSeconds: nonnegative, status: z.enum(['measured', 'baseline', 'unavailable']),
@@ -26,7 +30,7 @@ const endpointSchema = z.object({ id: z.enum(['gateway', 'internet']), target: z
 export const settingsSchema = z.object({ gatewayOverride: z.string().nullable(), internetTarget: z.string(), timeoutMs: z.number().int().min(250).max(10000) }).strict();
 export const snapshotSchema = z.object({ now: timestamp, sessionStarted: timestamp, runningSeconds: nonnegative, paused: z.boolean(),
   network: z.object({ connected: z.boolean(), adapterId: z.string().nullable(), adapterName: z.string(), gateway: z.string().nullable(),
-    adapters: z.array(z.object({ id: z.string(), name: z.string(), address: z.string(), gateway: z.string() }).strict()), error: z.string().nullable(), details: detailsSchema.nullable() }).strict(),
+    adapters: z.array(z.object({ id: z.string(), name: z.string(), address: z.string(), gateway: z.string() }).strict()), error: z.string().nullable(), details: detailsSchema.nullable(), observedAt: timestamp.nullable().default(null) }).strict(),
   settings: settingsSchema, gateway: endpointSchema, internet: endpointSchema }).strict();
 export const speedTestSchema = z.object({
   status: z.enum(['idle', 'running', 'complete', 'canceled', 'error']), phase: z.enum(['Ready', 'Idle latency', 'Download', 'Upload', 'Complete', 'Canceled', 'Test stopped', 'Test failed']),

@@ -6,6 +6,14 @@
 
 A local Windows network instrument with digital EV-style instruments, synchronized signal histories and honest measurements. Follow your gateway and internet response times alongside the traffic actually passing through your PC.
 
+## Wi-Fi Lab · M0.8 source milestone
+
+A synchronized native RSSI radar and dimensional PC → access-point bridge, four linked radio/latency charts, and a detailed association inspector. The graphics use display-only spring motion; exact measurements remain native. Read-only: no band switching.
+
+![Wi-Fi Lab with real Windows measurements](docs/screenshots/m08-wifi-lab-1920x1080.png)
+
+[1366×768 capture](docs/screenshots/m08-wifi-lab-1366x768.png) · [Validation and limitations](HANDOFF.md). Build from source for M0.8. The packaged release below remains M0.7; no M0.8 release has been published.
+
 ## Download
 
 **[Download Wiffer for Windows x64](https://github.com/shafaii/wiffer/releases/download/v0.7.0/Wiffer-0.7.0-win-x64.zip)** · [Release notes](https://github.com/shafaii/wiffer/releases/tag/v0.7.0)
@@ -64,11 +72,11 @@ Source solution/project names retain `PulseDeck` to preserve architecture and so
 
 WPF hosts bundled React/TypeScript in WebView2. `src/PulseDeck.Core` owns ICMP, physical-interface byte counters and bounded Native Wi-Fi parsing. Bridge v2 validates both directions: 1 Hz probe/connection snapshots and separate approximately 4 Hz incremental traffic batches. Six stable ECharts instances render bounded histories; JavaScript never generates live measurements.
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for measurement mathematics, security boundaries and lifecycle behavior, [HANDOFF.md](HANDOFF.md) for observed validation, and [ROADMAP.md](ROADMAP.md) for scope. M0.7 stops before M1.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for measurement mathematics, security boundaries and lifecycle behavior, [HANDOFF.md](HANDOFF.md) for observed validation, and [ROADMAP.md](ROADMAP.md) for scope. M0.8 stops before band switching and M1.
 
 ## Validation and limits
 
-61 native tests and 16 frontend tests pass. TypeScript, frontend production build, Release solution build and self-contained publication pass. Live checks exercise pause/reset/resume, historical summaries, invalid settings, chart identity and both requested viewport sizes. Frame measurements are browser callback timings, **not GPU present events or a guaranteed 120 FPS claim**.
+70 native tests and 22 frontend tests pass for M0.8. TypeScript, frontend production build and Release solution build pass. M0.8 packaging/publication is not performed; the earlier M0.7 release remains available. Live checks exercise pause/reset/resume, historical summaries, invalid settings, chart identity and both requested viewport sizes. Frame measurements are browser callback timings, **not GPU present events or a guaranteed 120 FPS claim**.
 
 Unsupported Wi-Fi fields stay unavailable. Driver retry/frame-failure counters, IPv6/DNS targets, persistence and recording are outside this release. Task Manager agreement, physical network transitions, VPN/multiple-adapter configurations, high-DPI layouts, long-duration soak and clean second-PC deployment still require manual validation.
 

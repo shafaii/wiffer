@@ -1,6 +1,6 @@
 # Wiffer development
 
-M0.7 adds the digital cockpit, explicit native internet speed testing, and measured telemetry delivery optimization to verified M0.6. This is a local Windows 11 diagnostic instrument, not a traffic analyzer. Stop before M1.
+M0.8 adds the read-only Wi-Fi Lab to verified M0.7, preserving its digital cockpit, explicit native internet speed testing and telemetry delivery. This is a local Windows 11 diagnostic instrument, not a traffic analyzer. Stop before M1.
 
 - Keep native probing in `src/PulseDeck.Core`; never generate live telemetry in JavaScript.
 - Preserve bounded buffers, one in-flight probe per endpoint, awaited cancellation, and explicit failure statuses. Canceled probes are not packet loss.
@@ -23,4 +23,14 @@ Observed M0.7 validation: 61 native and 16 frontend tests pass; TypeScript, prod
 - Digital arcs use display-only critically damped springs. Exact instantaneous and weighted average numbers never interpolate.
 Final WebView2 validation passed at 1366×768 and 1920×1080 with six stable charts. Final sample → JavaScript wall-clock p95 was 1 ms at each viewport, with zero observed batch gaps; rAF p95 was 6.7/7.2 ms and does not establish GPU presentation. Full data and remaining limitations are in HANDOFF.md.
 
-M0.7 publication is verified: public v0.7.0 release, all 430 ZIP entries compared to the tested package, and unauthenticated downloaded ZIP/checksum agreement. Stable installed executable and shortcut checksums remain unchanged. Stop after M0.7.
+M0.7 publication is verified: public v0.7.0 release, all 430 ZIP entries compared to the tested package, and unauthenticated downloaded ZIP/checksum agreement. Stable installed executable and shortcut checksums remained unchanged at M0.7 publication. M0.8 is the current authorized milestone; stop after M0.8.
+
+## M0.8 rules
+
+- Read-only Wi-Fi Lab uses one native completion timestamp and one shared display-state calculation for both hero instruments. RSSI, reported quality, negotiated rates and actual interface traffic remain distinct.
+- Serialized connection reads target 1 Hz and stop while paused. Native state and BSSID checks discard detected mixed observations; never turn privacy denial or ambiguous MLO into invented data. Native calls are synchronous and shutdown awaits completion; do not claim a hard driver timeout.
+- Wi-Fi history stores only received native observations, deduplicates completion timestamps, caps at 600, clears on session/adapter replacement and breaks traces across gaps/detected roaming. It is incremental within the existing 1 Hz snapshot, never a replay or synthetic sample source.
+- Radar radius maps measured RSSI (−100 to −40 dBm); quality controls independent lighting. Shared rAF springs are display-only, settle to idle, stop while hidden and honor live reduced-motion changes. Missing RSSI/quality suppresses its respective live field/link.
+- No band switching, scans, radio writes, distance/interference/SNR/retry claims or M1. Source commit/push is explicitly authorized for M0.8; no new release is published by this task. Preserve the stable installation, desktop shortcuts and M0.7 evidence.
+- M0.8 automated validation: 70 native and 22 frontend tests, TypeScript, production build and Release build pass. See HANDOFF.md for actual WebView2 captures, frame-callback measurements and limitations; rAF is not GPU presentation.
+Final M0.8 WebView2 checks pass at 1366×768 and 1920×1080 with four stable Lab charts, exact shared native timestamps/numbers, pause/resume and reduced motion. Both hero pairs and all charts fit. Final Lab rAF median/p95: 6.9/20.6 ms and 7.6/20.6 ms; these are callback opportunities, not GPU presentation. M0.7 cockpit/lifecycle regression checks also pass. See HANDOFF.md and the m08 validation aggregates for phase-dependent snapshot delivery and remaining hardware limits.

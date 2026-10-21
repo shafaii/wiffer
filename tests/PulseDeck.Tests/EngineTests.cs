@@ -6,6 +6,30 @@ namespace PulseDeck.Tests;
 
 public class EngineTests
 {
+    private sealed class SerializedNetwork : INetworkProvider
+    {
+        public int Reads, Active, Overlaps;
+        public NetworkState Read()
+        {
+            Interlocked.Increment(ref Reads);
+            if (Interlocked.Increment(ref Active) != 1) Interlocked.Increment(ref Overlaps);
+            try { Thread.Sleep(10); return new(true, "wifi", "Wi-Fi", "192.168.1.1", []); }
+            finally { Interlocked.Decrement(ref Active); }
+        }
+    }
+    [Fact] public async Task RadioRefreshIsSerializedTimestampedAndStopsWhilePaused()
+    {
+        var provider = new SerializedNetwork(); var clock = new Clock();
+        await using var engine = new MonitorEngine(new Probe(), provider, clock);
+        await engine.InitializeAsync(); Assert.Equal(clock.Now, engine.Snapshot().Network.ObservedAt);
+        clock.Now = clock.Now.AddSeconds(1);
+        await Task.WhenAll(Enumerable.Range(0, 8).Select(_ => Task.Run(engine.RefreshNetworkAsync)));
+        Assert.Equal(0, provider.Overlaps); Assert.Equal(clock.Now, engine.Snapshot().Network.ObservedAt);
+        await engine.SetPausedAsync(true); var count = provider.Reads;
+        clock.Now = clock.Now.AddSeconds(3); await engine.RefreshNetworkAsync();
+        Assert.Equal(count, provider.Reads); Assert.NotEqual(clock.Now, engine.Snapshot().Network.ObservedAt);
+        await engine.SetPausedAsync(false); await engine.RefreshNetworkAsync(); Assert.Equal(clock.Now, engine.Snapshot().Network.ObservedAt);
+    }
     private sealed class Network : INetworkProvider
     {
         public NetworkState Value = new(true, "nic1", "Ethernet", "192.168.1.1", []);
@@ -98,6 +122,17 @@ public class EngineTests
         var probe = new Probe(); var network = new Network(); await using var engine = Engine(probe, network); await engine.InitializeAsync(); await engine.SetPausedAsync(true);
         network.Value = new(false, null, "Offline", null, []); await engine.RefreshNetworkAsync(); network.Value = new(true, "nic1", "Ethernet", "192.168.1.1", []); await engine.RefreshNetworkAsync();
         var calls = probe.Calls.Values.Sum(); await Task.Delay(40); Assert.Equal(calls, probe.Calls.Values.Sum()); Assert.True(engine.Snapshot().Paused);
+    }
+    [Fact] public async Task ResumeRevalidatesAnAdapterChangedDuringPauseBeforeStartingWorkers()
+    {
+        var probe = new Probe(); var network = new Network(); await using var engine = Engine(probe, network);
+        await engine.InitializeAsync(); await Until(() => engine.Snapshot().Gateway.Samples.Length > 0); await engine.SetPausedAsync(true);
+        var oldCalls = probe.Calls.GetValueOrDefault("192.168.1.1");
+        network.Value = new(true, "nic2", "New Wi-Fi", "192.168.2.1", []);
+        await engine.SetPausedAsync(false); await Until(() => engine.Snapshot().Gateway.Samples.Length > 0);
+        Assert.Equal(oldCalls, probe.Calls.GetValueOrDefault("192.168.1.1"));
+        Assert.Equal("nic2", engine.Snapshot().Network.AdapterId);
+        Assert.All(engine.Snapshot().Gateway.Samples, s => Assert.Equal("192.168.2.1", s.Destination));
     }
     [Fact] public async Task TargetChangeClearsOldSamplesAndCancelsOldWorkers()
     {

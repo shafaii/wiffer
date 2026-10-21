@@ -1,3 +1,4 @@
+import { WifiLab } from './WifiLab';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { InstrumentChart, instruments, type Instrument } from './InstrumentChart';
 import { TrafficDeck } from './SpeedDial';
@@ -92,13 +93,13 @@ function ConnectionInspector({ snapshot }: { snapshot: Snapshot | null }) {
     <p>{details?.selection ?? snapshot?.network.error ?? 'Waiting for network information.'} · ICMP follows Windows routing.</p>
     {wifi?.unavailableReason && <p className="amber">{wifi.unavailableReason}</p>}
     {details?.counterError && <p className="amber">{details.counterError}</p>}
-    <p>Link rates describe the Wi-Fi association, not measured throughput. Error/discard counters are driver-reported cumulative interface totals, not ICMP loss. Wi-Fi retry/frame-failure diagnostics are unavailable until driver support is validated. Radio details refresh every 3 seconds.</p>
+    <p>Link rates describe the Wi-Fi association, not measured throughput. Error/discard counters are driver-reported cumulative interface totals, not ICMP loss. Wi-Fi retry/frame-failure diagnostics are unavailable until driver support is validated. Radio details refresh approximately once per second while monitoring.</p>
   </details>;
 }
 
 export function App() {
   const { snapshot, error, pending, stale, command, clearError } = useMonitor();
-  const [page, setPage] = useState<'live' | 'history'>('live');
+  const [page, setPage] = useState<'live' | 'wifi' | 'history'>('live');
   const [seconds, setSeconds] = useState(60);
   const [focus, setFocus] = useState(true);
   const [speedOpen, setSpeedOpen] = useState(false);
@@ -110,8 +111,8 @@ export function App() {
   const state = !snapshot ? 'Awaiting desktop' : stale ? 'Host connection lost' : snapshot.paused ? 'Paused' : snapshot.network.error ? 'Detection unavailable' : !connected ? 'Disconnected' : 'Monitoring';
   useEffect(() => { const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') setExpanded(null); }; window.addEventListener('keydown', escape); return () => window.removeEventListener('keydown', escape); }, []);
   return <div className="app-shell">
-    <header className="topbar"><div className="brand"><img className="brand-icon" src="/wiffer.svg" alt="Wiffer detective mascot" /><span>Wiffer<small>SNIFF OUT YOUR NETWORK PROBLEMS.</small></span><span className="edition">M0.7</span></div>
-      <nav aria-label="Main views"><button className={page === 'live' ? 'active' : ''} onClick={() => setPage('live')}>Instruments</button><button className={page === 'history' ? 'active' : ''} onClick={() => setPage('history')}>Historical context <span className="count">6</span></button></nav>
+    <header className="topbar"><div className="brand"><img className="brand-icon" src="/wiffer.svg" alt="Wiffer detective mascot" /><span>Wiffer<small>SNIFF OUT YOUR NETWORK PROBLEMS.</small></span><span className="edition">M0.8</span></div>
+      <nav aria-label="Main views"><button className={page === 'live' ? 'active' : ''} onClick={() => setPage('live')}>Instruments</button><button className={page === 'wifi' ? 'active' : ''} onClick={() => setPage('wifi')}>Wi-Fi Lab</button><button className={page === 'history' ? 'active' : ''} onClick={() => setPage('history')}>Historical context <span className="count">6</span></button></nav>
       <div className="header-tools"><span className="local-label">ON DEVICE / WINDOWS</span><button aria-label="Measurement settings" disabled={!snapshot} onClick={() => setSettings(true)}><Glyph name="settings" /></button></div>
     </header>
     {!snapshot && <div className="host-banner">Desktop host not connected. Open Wiffer.exe. This browser view contains no simulated telemetry.</div>}
@@ -122,7 +123,7 @@ export function App() {
       <div className="session-strip"><div className="connection-state"><span className={`status-dot ${!inactive ? 'is-live' : ''}`} /><strong>{state}</strong><span>{snapshot?.network.adapterName ?? 'Native instrumentation'}</span><span className="strip-path">{snapshot?.gateway.target ?? 'Gateway unknown'} <i>→</i> {snapshot?.internet.target ?? '1.1.1.1'}</span></div>
         <div className="session-actions"><span className="session-clock">{elapsed(snapshot?.runningSeconds ?? 0)}<small>ACTIVE TIME</small></span><button className="test-speed" disabled={!snapshot || stale} onClick={() => setSpeedOpen(true)}>↗ Test Speed</button><button disabled={!snapshot || pending || stale} onClick={() => command(snapshot?.paused ? 'resume' : 'pause')}><Glyph name={snapshot?.paused ? 'play' : 'pause'} />{snapshot?.paused ? 'Resume' : 'Pause'}</button><button disabled={!snapshot || pending || stale} onClick={() => command('reset')}><Glyph name="reset" />Reset</button></div>
       </div>
-      <div className="cockpit"><TrafficDeck inactive={inactive || !snapshot?.network.adapterId} state={!snapshot?.network.adapterId && snapshot ? 'Interface unavailable' : state} /><section className="signal-deck"><div className="instrument-bar"><span>PATH RESPONSE</span><span>NATIVE ICMP / ~1 Hz</span></div>
+      {page === 'wifi' ? <WifiLab snapshot={snapshot} stale={stale}/> : <><div className="cockpit"><TrafficDeck inactive={inactive || !snapshot?.network.adapterId} state={!snapshot?.network.adapterId && snapshot ? 'Interface unavailable' : state} /><section className="signal-deck"><div className="instrument-bar"><span>PATH RESPONSE</span><span>NATIVE ICMP / ~1 Hz</span></div>
         <div className="signal-readings"><Latest endpoint={snapshot?.gateway} color="gateway" now={snapshot?.now} inactive={inactive} /><Latest endpoint={snapshot?.internet} color="internet" now={snapshot?.now} inactive={inactive} /></div>
         <div className="path-stats">{(['gateway', 'internet'] as const).map(id => { const e = snapshot?.[id], m = seconds === 60 ? e?.stats60 : e?.stats300; return <div key={id}><span>{id === 'gateway' ? 'GW' : 'EXT'} <small>{seconds}s</small></span><span>AVG <b>{number(m?.average)}<small>ms</small></b></span><span>P95 <b>{number(m?.p95)}<small>ms</small></b></span><span>LOSS <b className={(m?.lossPercent ?? 0) > 0 ? 'coral' : ''}>{number(m?.lossPercent)}<small>%</small></b></span></div>; })}</div>
         <div className="signal-caption">Two independent endpoints. Spikes are observations, not diagnoses.</div>
@@ -137,8 +138,8 @@ export function App() {
         <p>Loss = (timeouts + transport errors) ÷ completed probes. Canceled probes and disconnected intervals are not loss. RTT statistics use successes only; P95 uses nearest rank. Summary variation uses successive successful RTTs within the selected window; the chart uses a 10-second window and skips failures. Missing replies break traces.</p>
         <p>Speeds = byte-counter delta × 8 ÷ monotonic elapsed seconds ÷ 1,000,000. This is total traffic through the selected physical interface, including LAN traffic. The short average is time-weighted over approximately 3 seconds. Auto arc ranges only grow during this view; select a fixed range for comparisons. Numbers are measured; only the illuminated arcs use spring motion. No speed tests run automatically.</p><TelemetryDiagnostics snapshot={snapshot}/><FrameCheck />
       </details>
-    </main>}
-    <footer><span><span className="tiny-dot" /> LOCAL MEASUREMENTS <i>/</i> ICMP ~1 Hz <i>/</i> TRAFFIC ~4 Hz <i>/</i> {snapshot?.settings.timeoutMs ?? 2500} ms timeout</span><span>Wiffer <b>0.7</b></span></footer>
+    </>}</main>}
+    <footer><span><span className="tiny-dot" /> LOCAL MEASUREMENTS <i>/</i> ICMP ~1 Hz <i>/</i> TRAFFIC ~4 Hz <i>/</i> {snapshot?.settings.timeoutMs ?? 2500} ms timeout</span><span>Wiffer <b>0.8</b></span></footer>
     {speedOpen && <SpeedTest command={command} pending={pending} onClose={() => setSpeedOpen(false)} />}
     {settings && snapshot && <SettingsDialog snapshot={snapshot} pending={pending} error={error} onClose={() => setSettings(false)} onSave={s => command('configure', s)} />}
   </div>;

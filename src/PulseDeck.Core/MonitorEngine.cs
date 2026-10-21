@@ -42,15 +42,24 @@ public sealed class MonitorEngine(IProbeProvider probes, INetworkProvider networ
 
     private NetworkState ReadNetwork()
     {
-        try { return networks.Read(); }
-        catch (Exception ex) { return new(false, null, "Detection unavailable", null, [], ex.Message); }
+        try { return networks.Read() with { ObservedAt = _clock.GetUtcNow() }; }
+        catch (Exception ex) { return new(false, null, "Detection unavailable", null, [], ex.Message, ObservedAt: _clock.GetUtcNow()); }
     }
 
     private static string Route(NetworkState network) => $"{network.AdapterId}/{network.Gateway}";
 
+    // Called under _sync after any old workers have been joined.
+    private void ApplyNetwork(NetworkState next)
+    {
+        if (next.Connected && _lastRoute is not null && Route(next) != _lastRoute) { _gateway.Clear(); _internet.Clear(); Traffic?.Clear(); }
+        if (_settings.GatewayOverride is null && next.Gateway is not null && _gateway.TryPeek(out var previous) && previous.Destination != next.Gateway) _gateway.Clear();
+        if (next.Connected) _lastRoute = Route(next);
+        _network = next;
+    }
+
     private async Task WatchNetworkAsync()
     {
-        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(3), _clock);
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(1), _clock);
         try { while (await timer.WaitForNextTickAsync(_shutdown.Token).ConfigureAwait(false)) await RefreshNetworkAsync().ConfigureAwait(false); }
         catch (OperationCanceledException) when (_shutdown.IsCancellationRequested) { }
     }
@@ -60,7 +69,7 @@ public sealed class MonitorEngine(IProbeProvider probes, INetworkProvider networ
         await _gate.WaitAsync().ConfigureAwait(false);
         try
         {
-            if (_disposed) return;
+            if (_disposed || _paused) return;
             var next = ReadNetwork();
             bool restart;
             lock (_sync) restart = next.Connected != _network.Connected || next.AdapterId != _network.AdapterId || next.Gateway != _network.Gateway;
@@ -68,10 +77,7 @@ public sealed class MonitorEngine(IProbeProvider probes, INetworkProvider networ
             lock (_sync)
             {
                 // Keep gaps on reconnect to the same route; never mix samples from different routes.
-                if (next.Connected && _lastRoute is not null && Route(next) != _lastRoute) { _gateway.Clear(); _internet.Clear(); Traffic?.Clear(); }
-                if (_settings.GatewayOverride is null && next.Gateway is not null && _gateway.TryPeek(out var previous) && previous.Destination != next.Gateway) _gateway.Clear();
-                if (next.Connected) _lastRoute = Route(next);
-                _network = next;
+                ApplyNetwork(next);
             }
             if (restart) StartWorkers();
         }
@@ -85,6 +91,8 @@ public sealed class MonitorEngine(IProbeProvider probes, INetworkProvider networ
         {
             if (_disposed || paused == _paused) return;
             await StopWorkersAsync().ConfigureAwait(false);
+            // Polling is suspended while paused. Revalidate the route before restarting probes.
+            if (!paused) { var next = ReadNetwork(); lock (_sync) ApplyNetwork(next); }
             lock (_sync)
             {
                 if (paused) { _elapsed += _clock.GetElapsedTime(_runStarted).TotalSeconds; _pausedAt = _clock.GetUtcNow(); }
