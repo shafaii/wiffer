@@ -44,3 +44,12 @@ Observed M0.8.1 validation: 70 native and 22 frontend tests, TypeScript, product
 ## M0.8.2 — Wireless Halo
 
 The user-authorized M0.8.2 replaces the earlier arc-symbol presentation rule only. Stop after M0.8.2. One SVG orb with orbital rings and a clockwise quality-calibrated halo: reported quality / 100 directly controls fill, intensity and spring-driven tilt; RSSI remains separate. No generic Wi-Fi arcs, particles, fake activity, new framework or measurement changes. Four mapping/state tests added; 26 frontend and 70 native tests plus required checks/builds pass. Both actual WebView2 viewport captures, calibrated stroke/native-number agreement, stable charts, pause/resume and reduced motion pass. Isolated state fixtures are not hardware tests. See HANDOFF.md for exact local launch path and limitations. Preserve prior evidence and stable installation; no release.
+
+## Focused glass-tile redesign
+The latest user-authorized hero replaces orb/arcs/bars with one glass tile. Quality controls fill height via the existing spring; exact numbers do not interpolate. Native data and charts are unchanged. 26 frontend/70 native tests and required builds pass; actual two-viewport and reduced-motion checks pass. See HANDOFF.md for evidence and hardware limitations. No later milestone, push or release.
+
+## Signal Field — latest focused hero
+The user-directed Signal Field supersedes previous hero artwork: wide glass surface, flowing contours, quality expansion/illumination and independent RSSI compression. Pointer deformation is cosmetic, spring-driven and reduced-motion aware. Native measurements/charts remain unchanged. 26 frontend and 70 native tests, builds and two-viewport native checks pass, including drag/release and reduced motion. See HANDOFF.md for evidence and touchscreen/hardware limits. No release or later milestone.
+
+## User delivery preference
+After future local executable updates, create or refresh the separate ignored `artifacts/Wiffer Latest.lnk` pointing to the verified latest development executable and provide its clickable absolute path in the final response. Preserve stable installation/Desktop shortcuts. The current Signal Field source commit/push is explicitly authorized; this does not authorize release publishing or future pushes.

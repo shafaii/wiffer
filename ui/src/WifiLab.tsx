@@ -43,37 +43,37 @@ function useFieldMotion(active: boolean, rssi: number | null, quality: number | 
   }, [active, rssi, quality]);
   return root;
 }
-function WirelessHalo({ wifi, active, state }: { wifi: Wifi | null; active: boolean; state: string }) {
-  return <svg className="wifi-sculpture wireless-halo" viewBox="0 0 640 380" role="img" aria-label={`Wireless halo: ${state}. Reported quality ${active ? fmt(wifi?.signalQuality) : 'unavailable'} percent. RSSI ${active ? fmt(wifi?.rssiDbm) : 'unavailable'} dBm.`} data-quality-available={active && wifi?.signalQuality != null} data-halo-state={state}>
-    <defs>
-      <radialGradient id="halo-body" cx="35%" cy="25%" r="78%"><stop stopColor="#325f7e"/><stop offset=".45" stopColor="#132f48"/><stop offset=".85" stopColor="#071424"/><stop offset="1" stopColor="#28475d"/></radialGradient>
-      <radialGradient id="halo-light" cx="32%" cy="24%" r="78%"><stop stopColor="#e0f7ff"/><stop offset=".15" stopColor="#8fd9ff"/><stop offset=".46" stopColor="#237bb3"/><stop offset=".8" stopColor="#102c48"/><stop offset="1" stopColor="#5cb6e1"/></radialGradient>
-      <radialGradient id="halo-bloom"><stop stopColor="#42aaff" stopOpacity=".19"/><stop offset=".65" stopColor="#429fff" stopOpacity=".05"/><stop offset="1" stopColor="#429fff" stopOpacity="0"/></radialGradient>
-      <linearGradient id="halo-orbit" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#234359"/><stop offset=".45" stopColor="#8acde9"/><stop offset=".65" stopColor="#e4f8ff"/><stop offset="1" stopColor="#244860"/></linearGradient>
-      <linearGradient id="halo-fill" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#e8faff"/><stop offset=".5" stopColor="#95ddff"/><stop offset="1" stopColor="#418ebf"/></linearGradient>
-    </defs>
-    <circle className="halo-bloom" cx="320" cy="183" r="176" fill="url(#halo-bloom)"/>
-    <g className="halo-orbits" fill="none" stroke="url(#halo-orbit)">
-      <ellipse cx="320" cy="183" rx="197" ry="61" transform="rotate(-24 320 183)" strokeWidth="1.2" opacity=".5"/>
-      <ellipse cx="320" cy="183" rx="159" ry="104" transform="rotate(38 320 183)" strokeWidth=".8" opacity=".35"/>
-    </g>
-    <circle cx="320" cy="183" r="87" fill="url(#halo-body)" stroke="#50718a" strokeOpacity=".3"/>
-    <circle className="halo-core" cx="320" cy="183" r="87" fill="url(#halo-light)"/>
-    <path d="M259 153C269 122 301 104 331 109" fill="none" stroke="#d2efff" strokeWidth="1.1" opacity=".25"/>
-    <g className="halo-orbits" fill="none">
-      <path d="M140 263A197 61 -24 0 0 500 103" stroke="#081522" strokeWidth="5"/>
-      <path d="M140 263A197 61 -24 0 0 500 103" stroke="url(#halo-orbit)" strokeWidth="1.7"/>
-    </g>
-    <circle className="halo-track" cx="320" cy="183" r="122" fill="none" stroke="#385269" strokeWidth="2"/>
-    <g transform="rotate(-90 320 183)" fill="none">
-      <circle className="halo-fill halo-soft" cx="320" cy="183" r="122" pathLength="100" stroke="#82d8ff" strokeWidth="9"/>
-      <circle className="halo-fill" cx="320" cy="183" r="122" pathLength="100" stroke="url(#halo-fill)" strokeWidth="3"/>
-    </g>
-    <path d="M320 55v7" stroke="#d3eaff" strokeWidth="1.5" opacity=".6"/>
-    <path className="wifi-slash" d="M276 227 364 139" stroke="#a6bbca" strokeWidth="3"/>
-    <g className="wifi-pause" stroke="#b0bdcb" strokeWidth="5" strokeLinecap="round"><path d="M312 173v20M328 173v20"/></g>
-    <circle className="wifi-pending" cx="320" cy="183" r="105" fill="none" stroke="#9db8cb" strokeWidth="2" strokeDasharray="20 16"/>
-  </svg>;
+function SignalField({ wifi, active, state }: { wifi: Wifi | null; active: boolean; state: string }) {
+  const surface = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = surface.current!, media = matchMedia('(prefers-reduced-motion: reduce)');
+    let target = [0,0], positions = [{position:0,velocity:0},{position:0,velocity:0}], frame = 0, previous = 0, dragging = false;
+    const draw = (time: number) => {
+      frame = 0;
+      positions = positions.map((p,i)=>media.matches ? {position:0,velocity:0} : springStep(p.position,p.velocity,target[i],previous ? (time-previous)/1000 : 0)); previous=time;
+      el.style.setProperty('--px',String(positions[0].position)); el.style.setProperty('--py',String(positions[1].position));
+      if (!document.hidden && !media.matches && positions.some((p,i)=>Math.abs(p.position-target[i])>.001 || Math.abs(p.velocity)>.003)) frame=requestAnimationFrame(draw);
+    };
+    const wake=()=>{if(!frame&&!document.hidden){previous=0;frame=requestAnimationFrame(draw);}};
+    const move=(e:PointerEvent)=>{const r=el.getBoundingClientRect(); const amount=dragging?1:.3; target=[Math.max(-1,Math.min(1,(e.clientX-r.left)/r.width*2-1))*amount,Math.max(-1,Math.min(1,(e.clientY-r.top)/r.height*2-1))*amount];wake();};
+    const down=(e:PointerEvent)=>{dragging=true;el.setPointerCapture(e.pointerId);move(e);};
+    const reset=()=>{dragging=false;target=[0,0];wake();};
+    const leave=()=>{if(!dragging)reset();};
+    const visibility=()=>{cancelAnimationFrame(frame);frame=0;reset();};
+    el.addEventListener('pointermove',move);el.addEventListener('pointerdown',down);el.addEventListener('pointerup',reset);el.addEventListener('pointercancel',reset);el.addEventListener('lostpointercapture',reset);el.addEventListener('pointerleave',leave);media.addEventListener('change',visibility);document.addEventListener('visibilitychange',visibility);
+    return ()=>{cancelAnimationFrame(frame);el.removeEventListener('pointermove',move);el.removeEventListener('pointerdown',down);el.removeEventListener('pointerup',reset);el.removeEventListener('pointercancel',reset);el.removeEventListener('lostpointercapture',reset);el.removeEventListener('pointerleave',leave);media.removeEventListener('change',visibility);document.removeEventListener('visibilitychange',visibility);};
+  }, []);
+  return <div ref={surface} className="signal-surface" data-quality={active&&wifi?.signalQuality!=null} data-rssi={active&&wifi?.rssiDbm!=null} data-status={state} role="img" aria-label={`Signal field. ${state}. Quality ${active?fmt(wifi?.signalQuality):'unavailable'} percent. RSSI ${active?fmt(wifi?.rssiDbm):'unavailable'} dBm. Drag to explore the surface; interaction does not alter measurements.`}>
+    <svg viewBox="0 0 720 320" aria-hidden="true" className="surface-svg">
+      <defs><linearGradient id="contour-light" x1="0" y1="0" x2="1" y2=".3"><stop stopColor="#529bc5" stopOpacity="0"/><stop offset=".32" stopColor="#6cc7f3"/><stop offset=".62" stopColor="#c8edff"/><stop offset="1" stopColor="#4489b5" stopOpacity="0"/></linearGradient><linearGradient id="contour-wash" x2="0" y2="1"><stop stopColor="#71cfff" stopOpacity=".16"/><stop offset="1" stopColor="#327eb1" stopOpacity="0"/></linearGradient></defs>
+      <g className="surface-displacement"><g className="surface-strength">
+        {Array.from({length:14},(_,i)=><path key={i} className="surface-contour" d={`M-30 ${238+i*8} C100 ${260+i*5} 150 ${70+i*10} 315 ${105+i*10} S510 ${270-i*3} 750 ${75+i*11}`} fill="none" stroke="url(#contour-light)" strokeWidth={i===5?1.8:.8} opacity={.25+(.75-Math.abs(i-6)*.08)}/>) }
+        <path d="M-30 278C100 285 150 120 315 155S510 255 750 130V340H-30Z" fill="url(#contour-wash)"/>
+      </g></g>
+    </svg>
+    <div className="surface-readout"><span>{active?fmt(wifi?.signalQuality):'—'}<small>%</small></span><span>{active?fmt(wifi?.rssiDbm):'—'}<small>dBm</small></span></div>
+    <span className="surface-status">{state}</span>
+  </div>;
 }
 const chartNames = ['RSSI', 'Reported quality', 'Negotiated rates', 'Gateway RTT'] as const;
 const LabChart = memo(function LabChart({ kind, points, snapshot, seconds }: { kind: number; points: WifiPoint[]; snapshot: Snapshot | null; seconds: number }) {
@@ -109,7 +109,7 @@ export function WifiLab({ snapshot, stale }: { snapshot: Snapshot | null; stale:
   const rows = [['Adapter', snapshot?.network.adapterName], ['SSID', wifi?.ssid], ['BSSID', wifi?.bssid], ['Adapter MAC', wifi?.mac], ['Band', wifi?.band], ['Channel', wifi?.channel], ['Radio type', wifi?.radioType], ['Authentication', wifi?.authentication], ['Cipher', wifi?.cipher], ['Connection mode', wifi?.connectionMode], ['Native state', wifi?.state], ['Observation (UTC)', at], ['RSSI (dBm)', wifi?.rssiDbm], ['Reported quality (%)', wifi?.signalQuality], ['Negotiated RX (Mbps)', wifi?.rxLinkMbps], ['Negotiated TX (Mbps)', wifi?.txLinkMbps], ['Gateway RTT (ms)', snapshot?.gateway.samples.at(-1)?.rttMs]];
   return <section className={`wifi-lab ${active ? 'lab-live' : 'lab-inactive'} ${state === 'Degraded' || state === 'Weakening' ? 'lab-warning' : ''}`} ref={root} data-state={state}>
     <article className="lab-hero" data-observed-at={at ?? ''} data-band={active ? wifi?.band ?? '' : ''}>
-      <WirelessHalo wifi={wifi} active={active} state={haloState(state, wifi?.signalQuality)}/>
+      <SignalField wifi={wifi} active={active} state={haloState(state, wifi?.signalQuality)}/>
       <div className="wifi-state" role="status">{haloState(state, wifi?.signalQuality)}</div>
       <div className="wifi-numbers"><span aria-label="Reported quality" className="wifi-quality-number">{active ? fmt(wifi?.signalQuality) : '—'}<small>%</small></span><span aria-label="RSSI" className="wifi-rssi-number">{active ? fmt(wifi?.rssiDbm) : '—'}<small>dBm</small></span></div>
     </article>
@@ -117,7 +117,7 @@ export function WifiLab({ snapshot, stale }: { snapshot: Snapshot | null; stale:
     <div className="lab-charts">{chartNames.map((_,kind)=><LabChart key={kind} kind={kind} points={points} snapshot={snapshot} seconds={seconds}/>)}</div>
     <details className="connection-inspector lab-inspector"><summary><span>TECHNICAL INSPECTOR <b>Native Windows Wi-Fi</b></span><span>ASSOCIATION & MEASUREMENT NOTES <i>＋</i></span></summary><dl>{rows.map(([label,value])=><div key={label}><dt>{label}</dt><dd>{value ?? 'Unavailable'}</dd></div>)}</dl>
       {wifi?.unavailableReason && <p className="amber">{wifi.unavailableReason}</p>}<p>{snapshot?.network.details?.selection ?? 'No selected Wi-Fi adapter.'} · Gateway ICMP follows Windows routing and may include other path effects. Gateway replies keep their own completion timestamps; they are not atomic with radio queries.</p>
-      <p>Halo circumference maps reported quality linearly from 0 to 100%, clockwise from the top marker. Orb intensity follows the same independent quality reading. Excellent ≥80%, good ≥60%, fair ≥40%, weak below 40% are display categories, not reliability guarantees. Missing quality suppresses the live halo. RSSI remains a separate exact measurement, never a distance. Existing weakening/degraded diagnostics remain independent. Weakening means a drop of at least 4 dB across 2–4.5 seconds; degraded means RSSI below −75 dBm or quality below 40%. These display thresholds do not identify a cause. Unknown radio fields remain unavailable, including ambiguous multi-link band/channel/RSSI. No distance, interference, SNR, retries or band switching is inferred.</p>
+      <p>Field expansion and illumination follow reported quality. Independent RSSI controls contour compression across −100 to −40 dBm, clipped for display only. Pointer deformation is cosmetic and never changes measurements. Excellent ≥80%, good ≥60%, fair ≥40%, weak below 40% are display categories, not reliability guarantees. Missing quality suppresses the live halo. RSSI remains a separate exact measurement, never a distance. Existing weakening/degraded diagnostics remain independent. Weakening means a drop of at least 4 dB across 2–4.5 seconds; degraded means RSSI below −75 dBm or quality below 40%. These display thresholds do not identify a cause. Unknown radio fields remain unavailable, including ambiguous multi-link band/channel/RSSI. No distance, interference, SNR, retries or band switching is inferred.</p>
       <p>Native query completion is the shared timestamp. Older than 3.5 seconds is stale. Pausing freezes acquisition. History is bounded to 600 observations, with gaps for missed polls and detected BSSID changes. Counter throughput is separate. The graphics spring between measurements and stop when settled; numbers and charts never interpolate.</p>
     </details>
   </section>;

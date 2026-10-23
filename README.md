@@ -6,13 +6,15 @@
 
 A local Windows network instrument with digital EV-style instruments, synchronized signal histories and honest measurements. Follow your gateway and internet response times alongside the traffic actually passing through your PC.
 
-## Wi-Fi Lab · M0.8 source milestone
+## Wi-Fi Lab · Signal Field
 
-A synchronized native RSSI radar and dimensional PC → access-point bridge, four linked radio/latency charts, and a detailed association inspector. The graphics use display-only spring motion; exact measurements remain native. Read-only: no band switching.
+An interactive glass signal surface with flowing contours. Real Windows signal quality controls expansion and illumination; independent RSSI controls contour compression. Hover adds subtle parallax, and dragging elastically displaces the field before it settles. Exact readings, four linked history charts and the technical inspector remain available. Reduced motion is supported; interaction never changes measurements.
 
-![Wi-Fi Lab with real Windows measurements](docs/screenshots/m08-wifi-lab-1920x1080.png)
+![Signal Field at 1920×1080 with real Windows telemetry](docs/screenshots/field-wifi-lab-1920x1080.png)
 
-[1366×768 capture](docs/screenshots/m08-wifi-lab-1366x768.png) · [Validation and limitations](HANDOFF.md). Build from source for M0.8. The packaged release below remains M0.7; no M0.8 release has been published.
+![Signal Field at 1366×768](docs/screenshots/field-wifi-lab-1366x768.png)
+
+Actual application captures with network identifiers masked. [Validation and limitations](HANDOFF.md). Build from source for the latest UI; the packaged release below remains M0.7. No new release has been published.
 
 ## Download
 
@@ -76,7 +78,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for measurement mathematics, security bou
 
 ## Validation and limits
 
-70 native tests and 22 frontend tests pass for M0.8. TypeScript, frontend production build and Release solution build pass. M0.8 packaging/publication is not performed; the earlier M0.7 release remains available. Live checks exercise pause/reset/resume, historical summaries, invalid settings, chart identity and both requested viewport sizes. Frame measurements are browser callback timings, **not GPU present events or a guaranteed 120 FPS claim**.
+70 native tests and 26 frontend tests pass for the current Signal Field source. TypeScript, frontend production build and Release solution build pass. M0.8 packaging/publication is not performed; the earlier M0.7 release remains available. Live checks exercise pause/reset/resume, historical summaries, invalid settings, chart identity and both requested viewport sizes. Frame measurements are browser callback timings, **not GPU present events or a guaranteed 120 FPS claim**.
 
 Unsupported Wi-Fi fields stay unavailable. Driver retry/frame-failure counters, IPv6/DNS targets, persistence and recording are outside this release. Task Manager agreement, physical network transitions, VPN/multiple-adapter configurations, high-DPI layouts, long-duration soak and clean second-PC deployment still require manual validation.
 

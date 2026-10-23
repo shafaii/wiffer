@@ -1,0 +1,117 @@
+{
+  "checks": [
+    "real native bridge, no injected telemetry",
+    "single hero timestamp and exact native numbers",
+    "4 stable charts across both viewports, windows and pause",
+    "native observations freeze during pause; inactive signal hidden",
+    "reduced motion snaps to measured targets",
+    "17 technical inspector fields",
+    "no page errors or horizontal overflow"
+  ],
+  "results": [
+    {
+      "width": 1366,
+      "height": 768,
+      "durationMs": 3002.0999999999995,
+      "nativeObservations": 3,
+      "snapshots": 3,
+      "availableThroughout": {
+        "rssi": true,
+        "quality": true,
+        "band": true,
+        "channel": true,
+        "rates": true,
+        "association": true
+      },
+      "hidden": false,
+      "rafMs": {
+        "count": 374,
+        "p50": 7.699999999999818,
+        "p95": 8.800000000000182,
+        "max": 34.70000000000073
+      },
+      "observedCadenceMs": {
+        "count": 2,
+        "p50": 1007,
+        "p95": 1007,
+        "max": 1007
+      },
+      "observationToSnapshotJsWallMs": {
+        "count": 3,
+        "p50": 167,
+        "p95": 200,
+        "max": 200
+      },
+      "layout": {
+        "width": 1366,
+        "height": 768,
+        "scrollY": 0,
+        "scrollWidth": 1351,
+        "heroBottom": 510,
+        "chartBottom": 701,
+        "stamps": [
+          "2026-10-23T00:39:22.4359195+00:00"
+        ],
+        "visibleState": "Stable"
+      },
+      "numerical": {
+        "sameTimestamp": true,
+        "rssi": true,
+        "quality": true
+      }
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "durationMs": 3006.8999999999996,
+      "nativeObservations": 3,
+      "snapshots": 3,
+      "availableThroughout": {
+        "rssi": true,
+        "quality": true,
+        "band": true,
+        "channel": true,
+        "rates": true,
+        "association": true
+      },
+      "hidden": false,
+      "rafMs": {
+        "count": 350,
+        "p50": 7.700000000000728,
+        "p95": 9.400000000001455,
+        "max": 36.69999999999891
+      },
+      "observedCadenceMs": {
+        "count": 2,
+        "p50": 990,
+        "p95": 990,
+        "max": 990
+      },
+      "observationToSnapshotJsWallMs": {
+        "count": 3,
+        "p50": 291,
+        "p95": 345,
+        "max": 345
+      },
+      "layout": {
+        "width": 1920,
+        "height": 1080,
+        "scrollY": 0,
+        "scrollWidth": 1905,
+        "heroBottom": 772,
+        "chartBottom": 1001,
+        "stamps": [
+          "2026-10-23T00:39:26.4275035+00:00"
+        ],
+        "visibleState": "Stable"
+      },
+      "numerical": {
+        "sameTimestamp": true,
+        "rssi": true,
+        "quality": true
+      }
+    }
+  ],
+  "pageErrors": [],
+  "limitations": "rAF opportunities are not GPU presentation; native and JS timing is same-PC wall-clock estimate. Debugger attached. No physical disconnect, roaming, MLO or privacy-policy changes performed."
+}

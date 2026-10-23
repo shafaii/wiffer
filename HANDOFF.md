@@ -1,3 +1,29 @@
+# Signal Field — focused redesign, 2026-10-22
+
+Replaced the prior hero with a wide soft-glass signal surface and fourteen luminous flowing contours. Quality independently controls expansion/illumination; RSSI controls vertical compression over the existing clipped −100 to −40 dBm display range. No inferred distance, synthetic observations or continuous fake activity. Exact quality/RSSI and a tiny state remain visible. Charts, native pipeline and inspector fields remain unchanged.
+
+Pointer hover adds restrained tilt/highlight. Captured pointer dragging displaces/skews the field, with critically damped release settling. Cancellation, pointer exit and visibility changes reset the interaction. Reduced motion suppresses tilt/deformation and snaps measurement animation. Pointer events support touch dragging; vertical page scrolling remains available via pan-y. Physical touchscreen verification was not performed.
+
+Validation: 26 frontend and 70 native tests pass, TypeScript and production build pass, Release build has zero warnings/errors. Real WebView2 checks pass at 1366×768 and 1920×1080: exact native readings/timestamps, quality target, four stable charts, pause/resume, 17 inspector fields, drag displacement/release convergence and live reduced-motion interaction suppression. Both final screenshots were visually inspected. Charts end at 701/1001 px. Existing Vite warnings remain. Three-second frame samples are not performance or GPU-presentation guarantees. Physical disconnect/roaming/high-DPI remain unverified.
+
+[1366×768](docs/screenshots/field-wifi-lab-1366x768.png) · [1920×1080](docs/screenshots/field-wifi-lab-1920x1080.png) · [Validation](docs/screenshots/field-validation.json). Reproducible native UI checks: `scripts/verify-signal-field.cjs` (temporary local debug port only).
+
+Launch: `C:\Users\shafa\OneDrive\Documents\ChatGPT\pulsedeck\src\PulseDeck.Windows\bin\Release\net10.0-windows\Wiffer.exe`. Stable installation and old evidence untouched. No push, release or later milestone work.
+
+---
+
+# Focused glass-tile redesign — 2026-10-22
+
+Replaced the rejected orb and bars with one rounded glass tile. Its fill height is linearly calibrated to reported quality, with exact percentage and tiny state inside; RSSI stays separate. Existing spring interpolation, hidden-page suspension and reduced motion remain. No native measurement, chart or inspector-field changes.
+
+Validation: 26 frontend and 70 native tests pass; TypeScript, production build and clean Release build pass. Actual WebView2 checks at 1366×768 and 1920×1080 pass native number/timestamp agreement, calibrated fill, four stable charts, pause/resume and reduced motion. Both screenshots visually inspected. Charts end at 701/1001 px. Existing Vite warnings remain. A prior development process locked the first build; closing it and rebuilding succeeded.
+
+Screenshots: [1366×768](docs/screenshots/tile-wifi-lab-1366x768.png), [1920×1080](docs/screenshots/tile-wifi-lab-1920x1080.png). Evidence: [validation](docs/screenshots/tile-validation.json). Short checks are not performance guarantees; physical disconnect/roaming/high-DPI remain unverified. Stable installation unchanged; no push or release.
+
+Launch: `C:\Users\shafa\OneDrive\Documents\ChatGPT\pulsedeck\src\PulseDeck.Windows\bin\Release\net10.0-windows\Wiffer.exe`.
+
+---
+
 # Wiffer M0.8.2 handoff — Wireless Halo
 
 Validated 2026-10-21 (America/Toronto). Complete; stop after M0.8.2. No M1, radio writes, installation changes or GitHub release.
