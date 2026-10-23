@@ -1,0 +1,105 @@
+{
+  "checks": [
+    {
+      "state": "Stable",
+      "rssi": -60,
+      "quality": 80,
+      "result": {
+        "state": "Stable",
+        "quality": "80",
+        "rssi": "-60",
+        "transform": null
+      }
+    },
+    {
+      "state": "Degraded",
+      "rssi": -83,
+      "quality": 25,
+      "result": {
+        "state": "Degraded",
+        "quality": "25",
+        "rssi": "-83",
+        "transform": null
+      }
+    },
+    {
+      "state": "Reconnecting",
+      "rssi": null,
+      "quality": null,
+      "result": {
+        "state": "Reconnecting",
+        "quality": "—",
+        "rssi": "—",
+        "transform": null
+      }
+    },
+    {
+      "state": "Disconnected",
+      "rssi": null,
+      "quality": null,
+      "result": {
+        "state": "Disconnected",
+        "quality": "—",
+        "rssi": "—",
+        "transform": null
+      }
+    },
+    {
+      "state": "Stale",
+      "rssi": -60,
+      "quality": 80,
+      "result": {
+        "state": "Stale",
+        "quality": "—",
+        "rssi": "—",
+        "transform": null
+      }
+    },
+    {
+      "state": "Unavailable",
+      "rssi": null,
+      "quality": null,
+      "result": {
+        "state": "Unavailable",
+        "quality": "—",
+        "rssi": "—",
+        "transform": null
+      }
+    },
+    {
+      "state": "Paused",
+      "rssi": -60,
+      "quality": 80,
+      "result": {
+        "state": "Paused",
+        "quality": "—",
+        "rssi": "—",
+        "transform": null
+      }
+    },
+    {
+      "state": "Stable",
+      "rssi": null,
+      "quality": 80,
+      "result": {
+        "state": "Stable",
+        "quality": "80",
+        "rssi": "—",
+        "transform": null
+      }
+    },
+    {
+      "state": "Stable",
+      "rssi": -60,
+      "quality": null,
+      "result": {
+        "state": "Stable",
+        "quality": "—",
+        "rssi": "-60",
+        "transform": null
+      }
+    }
+  ],
+  "pinch": "Emulated two-pointer pinch zoom passed",
+  "scope": "Isolated UI fixtures, not live telemetry or hardware tests"
+}

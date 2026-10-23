@@ -53,3 +53,11 @@ The user-directed Signal Field supersedes previous hero artwork: wide glass surf
 
 ## User delivery preference
 After future local executable updates, create or refresh the separate ignored `artifacts/Wiffer Latest.lnk` pointing to the verified latest development executable and provide its clickable absolute path in the final response. Preserve stable installation/Desktop shortcuts. The current Signal Field source commit/push is explicitly authorized; this does not authorize release publishing or future pushes.
+
+## M0.8.3 — Live Signal Surface
+
+Supersedes the decorative Signal Field and earlier hero rules. A full-width SVG timeline uses native observation timestamps and fixed 0–100% quality coordinates. Layered strokes illuminate the same trace; flat data stays flat. Missing quality, nonconnected observations, gaps and roaming split paths. Original native timestamp strings retain precision for inspection; RSSI remains independent. Hover, horizontal pan, bounded 60–300-second wheel/pinch zoom, pinning, Return to Live and keyboard inspection share the four historical charts' time window. Gateway replies keep their own timestamps. Spring motion translates presentation/cursor only, stops at rest/hidden and honors reduced motion.
+
+MonitorEngine raises NetworkObserved after committing a serialized refresh and releasing its lifecycle gate. The host coalesces notifications on its dispatcher and sends the existing bridge-v2 snapshot. The 250 ms timer sends a fallback snapshot after at least 1250 ms without delivery. Polling frequency, synchronous native-query behavior, UTC completion time, monotonic elapsed timing, traffic batches and history capacities are unchanged. No overlapping reads or new bridge message type.
+
+Observed validation: 35 frontend and 71 native tests pass, plus TypeScript, production and Release builds. Native checks cover both viewports, exact readings/timestamps, hover/pan/zoom/pin/Live, keyboard controls, pause/resume, four stable charts and reduced motion. Isolated fixtures cover states/missing fields and emulated pinch; these are not hardware tests. See HANDOFF.md for screenshots, measured delivery/frame timing and remaining limitations. User explicitly authorized committing/pushing M0.8.3 on 2026-10-23; no release, installation replacement, band switching or M1. Stop after M0.8.3.

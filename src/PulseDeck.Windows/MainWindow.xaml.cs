@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.ComponentModel;
 using System.Net.NetworkInformation;
 using System.IO;
@@ -18,7 +19,8 @@ public partial class MainWindow : Window
     private readonly MonitorEngine _engine = new(new NativeProbe(), new WindowsNetworkProvider(), traffic: new WindowsNetworkProvider());
     private readonly SemaphoreSlim _commands = new(1, 1);
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(250) };
-    private int _ticks;
+    private int _networkQueued;
+    private long _lastSnapshot;
     private int _trafficQueued;
     private long _batchId;
     private readonly QuickSpeedTest _speedTest = new();
@@ -51,11 +53,17 @@ public partial class MainWindow : Window
         };
         Loaded += async (_, _) => { _initialization = InitializeAsync(); await _initialization; };
         Closing += OnClosing;
-        _timer.Tick += (_, _) => { if (++_ticks % 4 == 0) SendSnapshot(); SendTraffic(); SendSpeedTest(); };
+        _timer.Tick += (_, _) => { if (Stopwatch.GetElapsedTime(_lastSnapshot).TotalMilliseconds >= 1250) SendSnapshot(); SendTraffic(); SendSpeedTest(); };
+        _engine.NetworkObserved += QueueNetwork;
         if (_engine.Traffic is { } traffic) traffic.SampleAvailable += QueueTraffic;
         NetworkChange.NetworkAddressChanged += NetworkChanged;
     }
 
+    private void QueueNetwork()
+    {
+        if (_closing || Interlocked.Exchange(ref _networkQueued, 1) != 0) return;
+        Dispatcher.BeginInvoke(() => { Interlocked.Exchange(ref _networkQueued, 0); if (!_closing) SendSnapshot(); });
+    }
     private void QueueTraffic()
     {
         if (_closing || Interlocked.Exchange(ref _trafficQueued, 1) != 0) return;
@@ -122,7 +130,7 @@ public partial class MainWindow : Window
         try { Browser.CoreWebView2.PostWebMessageAsJson(JsonSerializer.Serialize(message, Json)); }
         catch (Exception ex) when (ex is InvalidOperationException or COMException) { _ready = false; _timer.Stop(); _ = PauseAfterFailureAsync("The interface connection was lost. Restart Wiffer."); }
     }
-    private void SendSnapshot() { if (_ready) Send(new { version = 2, type = "snapshot", snapshot = _engine.Snapshot() }); }
+    private void SendSnapshot() { if (_ready && !_closing) { Send(new { version = 2, type = "snapshot", snapshot = _engine.Snapshot() }); _lastSnapshot = Stopwatch.GetTimestamp(); } }
     private void SendTraffic()
     {
         if (!_ready || _engine.Traffic is null) return;
@@ -169,6 +177,7 @@ public partial class MainWindow : Window
         if (_closing) return;
         _closing = true; _timer.Stop();
         NetworkChange.NetworkAddressChanged -= NetworkChanged;
+        _engine.NetworkObserved -= QueueNetwork;
         if (_engine.Traffic is { } traffic) traffic.SampleAvailable -= QueueTraffic;
         if (_initialization is not null) await _initialization;
         await _commands.WaitAsync();

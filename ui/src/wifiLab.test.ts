@@ -12,6 +12,9 @@ function snap(t = 0): Snapshot {
     settings:{gatewayOverride:null,internetTarget:'1.1.1.1',timeoutMs:2500},gateway:{id:'gateway',target:null,samples:[],stats60:metrics,stats300:metrics},internet:{id:'internet',target:'1.1.1.1',samples:[],stats60:metrics,stats300:metrics}});
 }
 describe('shared Wi-Fi native observation history', () => {
+  it('retains the original native timestamp precision for inspection', () => {
+    const h=new WifiHistory(),s=snap(1000);s.network.observedAt=iso(1000).replace('.000Z','.1234567Z');h.accept(s);expect(h.points[0].observedAt).toBe(s.network.observedAt);
+  });
   it('deduplicates native timestamps, freezes on pause and bounds to 600 observations', () => {
     const h = new WifiHistory(); for(let i=0;i<650;i++) h.accept(snap(i*1000));
     expect(h.points).toHaveLength(600); h.accept(snap(649000)); expect(h.points).toHaveLength(600);

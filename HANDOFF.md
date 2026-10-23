@@ -1,3 +1,39 @@
+# Wiffer M0.8.3 — Live Signal Surface
+
+Completed 2026-10-23 (America/Toronto). This section supersedes the decorative Signal Field. Stop after M0.8.3; no M1, band switching, release or stable installation changes. Source commit/push is explicitly authorized by the user's resume request.
+
+## Delivered
+
+The hero now fills over 99% of the available Lab width and plots received native completion timestamps against fixed 0–100% signal quality. The subtle layered contours illuminate the same measured trace. Constant readings remain flat; missing quality, nonconnected observations, missed-poll gaps and detected roaming split the trace. No decorative deformation, synthetic waves or invented telemetry remains. Independent RSSI, band and a tiny current state accompany exact readings.
+
+Hover inspects a real observation. Horizontal pointer drag pans within retained history; wheel or two-pointer pinch zooms continuously within 60–300 seconds. Click/tap pins; Return to Live releases inspection and follows acquisition. Arrow keys inspect, Enter pins and Escape returns to Live. The four supporting charts share the chosen window and inspection timestamp; gateway replies retain their own completion times. Native timestamp strings retain their original fractional precision. Browser text selection is disabled on the drag surface. The expandable 17-field inspector remains.
+
+Spring-driven arrival translation and inspection-cursor feedback modify presentation only. No React tree updates occur on animation frames. Loops settle, stop when hidden and honor live reduced-motion changes. SVG rendering adds no dependency. History remains bounded to 600 received observations and clears on session/adapter replacement.
+
+## Acquisition-triggered delivery
+
+A before-change native run measured observation-to-JavaScript wall-clock p95 of 866/836 ms at the two viewports. MonitorEngine now notifies after a serialized connection refresh commits and releases its lifecycle gate. The host coalesces notifications through one pending dispatcher callback and sends the existing bridge-v2 snapshot. The 250 ms timer is a fallback after at least 1250 ms without a snapshot, including while paused. Normal acquisition remains approximately 1 Hz; native providers, independent 4 Hz traffic delivery, UTC completion times, monotonic measurement timing and awaited cancellation remain unchanged. No scans, overlapping native calls or new bridge schema. A blocked UI can still coalesce observations; no lossless-delivery guarantee is made.
+
+## Verified results
+
+35 frontend / 71 native tests pass. TypeScript, production frontend build and Release solution build pass; the Release build has zero warnings/errors. Existing Zod annotation notices and Vite chunk-size warning remain. New tests cover quality mapping, exact timestamp retention, real sample append/gaps, missing fields/nonconnected states, bounded pan/zoom, pin/Live semantics and native notification commit/pause behavior.
+
+Actual native WebView2 checks pass at 1366×768 and 1920×1080: exact native readings/timestamps, full-width layout, four stable chart instances, hover/pin persistence, drag, wheel/window controls, keyboard inspection, Return to Live, reduced motion, pause/resume, 17 inspector fields and no page errors/overflow. Chart bottoms are 701/1001 px. Final screenshots were visually inspected. Nine isolated state/missing-field fixtures and emulated two-pointer pinch pass; fixture values never enter the native app. The preserved cockpit regression passes pause/reset/resume, physical-interface traffic freeze, all six historical summaries, duplicate-target rejection and six stable chart instances at both sizes.
+
+Final 30-second native timing windows: 1366×768: observation → JavaScript wall-clock p50/p95 1/1 ms; rAF median/p95 5.6/16.8 ms; 1920×1080: observation → JavaScript wall-clock p50/p95 1/2 ms; rAF median/p95 5.4/16.3 ms. These are same-PC UTC delivery estimates and browser frame callback opportunities with a debugger attached, not GPU-present measurements or sustained FPS guarantees. The earlier run had roughly 39 ms rAF p95 under different desktop load; frame pacing is not guaranteed across 60/120/144 Hz displays.
+
+Evidence: [1366×768](docs/screenshots/m083-wifi-lab-1366x768.png), [1920×1080](docs/screenshots/m083-wifi-lab-1920x1080.png), [pinned inspection](docs/screenshots/m083-inspection-1920x1080.png), [native validation](docs/screenshots/m083-validation.json), [delivery before](docs/screenshots/m083-delivery-before.json), [state fixtures](docs/screenshots/m083-state-validation.json), [cockpit regression](docs/screenshots/m083-regression.json). Reproduce via `scripts/verify-live-surface.cjs` and `scripts/verify-live-surface-states.cjs` with the existing optional Playwright runtime and temporary local debugger. Cockpit regression used the existing verify-webview harness with separate output paths and 3-second frame windows.
+
+## Launch and limitations
+
+Latest development executable: `C:\Users\shafa\OneDrive\Documents\ChatGPT\pulsedeck\src\PulseDeck.Windows\bin\Release\net10.0-windows\Wiffer.exe`.
+
+Refreshed ignored shortcut: `C:\Users\shafa\OneDrive\Documents\ChatGPT\pulsedeck\artifacts\Wiffer Latest.lnk`. Its target was verified. Preserve the adjacent build files; the EXE is not a standalone distribution. Stable installation/Desktop shortcuts and prior evidence remain untouched.
+
+Physical touchscreen, physical disconnect/roaming, MLO, high-DPI, second-PC and long-soak behavior remain unverified. No bandwidth-consuming speed test was rerun; its native tests pass and implementation is unchanged. Earlier sandboxed native tests could not connect to testhost; rerunning with local process access passed. An open development process caused a build lock and was closed before the successful build. An approval-service usage limit interrupted the last CSS packaging/docs step; the resumed task rebuilt and revalidated it. No required milestone implementation remains.
+
+---
+
 # Signal Field — focused redesign, 2026-10-22
 
 Replaced the prior hero with a wide soft-glass signal surface and fourteen luminous flowing contours. Quality independently controls expansion/illumination; RSSI controls vertical compression over the existing clipped −100 to −40 dBm display range. No inferred distance, synthetic observations or continuous fake activity. Exact quality/RSSI and a tiny state remain visible. Charts, native pipeline and inspector fields remain unchanged.

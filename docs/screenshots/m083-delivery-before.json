@@ -1,0 +1,85 @@
+{
+  "results": [
+    {
+      "width": 1366,
+      "height": 768,
+      "durationMs": 30028,
+      "rafMs": {
+        "count": 1952,
+        "p50": 9.399999999999636,
+        "p95": 37.39999999999782,
+        "max": 46.900000000001455
+      },
+      "observationToJsWallMs": {
+        "count": 29,
+        "p50": 604,
+        "p95": 866,
+        "max": 893
+      },
+      "cadenceMs": {
+        "count": 28,
+        "p50": 1004,
+        "p95": 1015,
+        "max": 1015
+      },
+      "layout": {
+        "width": 1366,
+        "height": 768,
+        "heroWidth": 1291,
+        "availableWidth": 1299,
+        "chartBottom": 701,
+        "scrollWidth": 1351
+      },
+      "values": {
+        "timestamp": true,
+        "quality": true,
+        "rssi": true
+      }
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "durationMs": 30008.899999999994,
+      "rafMs": {
+        "count": 2683,
+        "p50": 11,
+        "p95": 12.80000000000291,
+        "max": 37.60000000000582
+      },
+      "observationToJsWallMs": {
+        "count": 30,
+        "p50": 491,
+        "p95": 836,
+        "max": 886
+      },
+      "cadenceMs": {
+        "count": 29,
+        "p50": 999,
+        "p95": 1021,
+        "max": 1023
+      },
+      "layout": {
+        "width": 1920,
+        "height": 1080,
+        "heroWidth": 1845,
+        "availableWidth": 1853,
+        "chartBottom": 1001,
+        "scrollWidth": 1905
+      },
+      "values": {
+        "timestamp": true,
+        "quality": true,
+        "rssi": true
+      }
+    }
+  ],
+  "checks": [
+    "actual native numbers/timestamps",
+    "full-width surface and four stable charts",
+    "hover, exact pinned observation, pan, wheel zoom, window controls, Return to Live",
+    "keyboard inspection, pause/resume, reduced motion",
+    "17 inspector fields, no page errors"
+  ],
+  "errors": [],
+  "limitations": "30-second rAF callback windows, not GPU presentation. Delivery uses same-PC UTC wall clock. No hardware disconnect/roaming/touchscreen test."
+}

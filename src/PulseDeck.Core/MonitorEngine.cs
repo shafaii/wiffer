@@ -6,6 +6,8 @@ namespace PulseDeck.Core;
 public sealed class MonitorEngine(IProbeProvider probes, INetworkProvider networks, TimeProvider? clock = null, TimeSpan? interval = null, ITrafficProvider? traffic = null) : IAsyncDisposable
 {
     public const int Capacity = 600;
+    // Notification only; observers read the committed snapshot outside the lifecycle gate.
+    public event Action? NetworkObserved;
     private readonly TimeProvider _clock = clock ?? TimeProvider.System;
     private readonly TimeSpan _interval = interval ?? TimeSpan.FromSeconds(1);
     public TrafficMonitor? Traffic { get; } = traffic is null ? null : new(traffic, clock ?? TimeProvider.System);
@@ -82,6 +84,7 @@ public sealed class MonitorEngine(IProbeProvider probes, INetworkProvider networ
             if (restart) StartWorkers();
         }
         finally { _gate.Release(); }
+        NetworkObserved?.Invoke();
     }
 
     public async Task SetPausedAsync(bool paused)

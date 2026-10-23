@@ -6,15 +6,15 @@
 
 A local Windows network instrument with digital EV-style instruments, synchronized signal histories and honest measurements. Follow your gateway and internet response times alongside the traffic actually passing through your PC.
 
-## Wi-Fi Lab · Signal Field
+## Wi-Fi Lab · Live Signal Surface (M0.8.3)
 
-An interactive glass signal surface with flowing contours. Real Windows signal quality controls expansion and illumination; independent RSSI controls contour compression. Hover adds subtle parallax, and dragging elastically displaces the field before it settles. Exact readings, four linked history charts and the technical inspector remain available. Reduced motion is supported; interaction never changes measurements.
+A full-width signal timeline driven by real Windows observations. Quality uses a fixed 0–100% scale; RSSI remains separate. Hover for exact values and native timestamps, drag through retained history, wheel or pinch between 60-second and five-minute windows, and click to pin an observation. Return to Live resumes following acquisition. Keyboard inspection and reduced motion are supported. Four linked charts and the technical inspector remain below the surface.
 
-![Signal Field at 1920×1080 with real Windows telemetry](docs/screenshots/field-wifi-lab-1920x1080.png)
+![Live Signal Surface at 1920×1080](docs/screenshots/m083-wifi-lab-1920x1080.png)
 
-![Signal Field at 1366×768](docs/screenshots/field-wifi-lab-1366x768.png)
+![Live Signal Surface at 1366×768](docs/screenshots/m083-wifi-lab-1366x768.png)
 
-Actual application captures with network identifiers masked. [Validation and limitations](HANDOFF.md). Build from source for the latest UI; the packaged release below remains M0.7. No new release has been published.
+Actual native application captures with network identifiers masked. Constant measurements stay flat; missing observations leave gaps. [Inspection capture](docs/screenshots/m083-inspection-1920x1080.png) · [Validation and limitations](HANDOFF.md). Build from source for M0.8.3; the packaged release below remains M0.7. No new release is published.
 
 ## Download
 
@@ -72,13 +72,13 @@ Source solution/project names retain `PulseDeck` to preserve architecture and so
 
 ## Architecture
 
-WPF hosts bundled React/TypeScript in WebView2. `src/PulseDeck.Core` owns ICMP, physical-interface byte counters and bounded Native Wi-Fi parsing. Bridge v2 validates both directions: 1 Hz probe/connection snapshots and separate approximately 4 Hz incremental traffic batches. Six stable ECharts instances render bounded histories; JavaScript never generates live measurements.
+WPF hosts bundled React/TypeScript in WebView2. `src/PulseDeck.Core` owns ICMP, physical-interface byte counters and bounded Native Wi-Fi parsing. Bridge v2 validates both directions: approximately 1 Hz acquisition-triggered probe/connection snapshots (with a timer fallback) and separate approximately 4 Hz incremental traffic batches. Six stable ECharts instances render bounded histories; JavaScript never generates live measurements.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for measurement mathematics, security boundaries and lifecycle behavior, [HANDOFF.md](HANDOFF.md) for observed validation, and [ROADMAP.md](ROADMAP.md) for scope. M0.8 stops before band switching and M1.
 
 ## Validation and limits
 
-70 native tests and 26 frontend tests pass for the current Signal Field source. TypeScript, frontend production build and Release solution build pass. M0.8 packaging/publication is not performed; the earlier M0.7 release remains available. Live checks exercise pause/reset/resume, historical summaries, invalid settings, chart identity and both requested viewport sizes. Frame measurements are browser callback timings, **not GPU present events or a guaranteed 120 FPS claim**.
+71 native tests and 35 frontend tests pass for M0.8.3. TypeScript, frontend production build and Release solution build pass. M0.8 packaging/publication is not performed; the earlier M0.7 release remains available. Live checks exercise pause/reset/resume, historical summaries, invalid settings, chart identity and both requested viewport sizes. Frame measurements are browser callback timings, **not GPU present events or a guaranteed 120 FPS claim**.
 
 Unsupported Wi-Fi fields stay unavailable. Driver retry/frame-failure counters, IPv6/DNS targets, persistence and recording are outside this release. Task Manager agreement, physical network transitions, VPN/multiple-adapter configurations, high-DPI layouts, long-duration soak and clean second-PC deployment still require manual validation.
 

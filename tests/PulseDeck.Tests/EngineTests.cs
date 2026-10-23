@@ -30,6 +30,22 @@ public class EngineTests
         Assert.Equal(count, provider.Reads); Assert.NotEqual(clock.Now, engine.Snapshot().Network.ObservedAt);
         await engine.SetPausedAsync(false); await engine.RefreshNetworkAsync(); Assert.Equal(clock.Now, engine.Snapshot().Network.ObservedAt);
     }
+    [Fact] public async Task CompletedNetworkObservationNotifiesAfterCommitAndNeverWhilePaused()
+    {
+        var network = new Network(); var clock = new Clock();
+        await using var engine = new MonitorEngine(new Probe(), network, clock);
+        await engine.InitializeAsync();
+        var notifications = new List<NetworkState>();
+        engine.NetworkObserved += () => notifications.Add(engine.Snapshot().Network);
+        clock.Now = clock.Now.AddSeconds(1);
+        await engine.RefreshNetworkAsync();
+        Assert.Single(notifications); Assert.Equal(clock.Now, notifications[0].ObservedAt);
+        network.Value = new(false, null, "Disconnected", null, []);
+        await engine.RefreshNetworkAsync();
+        Assert.Equal(2, notifications.Count); Assert.False(notifications[1].Connected);
+        await engine.SetPausedAsync(true); await engine.RefreshNetworkAsync();
+        Assert.Equal(2, notifications.Count);
+    }
     private sealed class Network : INetworkProvider
     {
         public NetworkState Value = new(true, "nic1", "Ethernet", "192.168.1.1", []);

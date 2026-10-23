@@ -1,5 +1,5 @@
 import type { Snapshot, Wifi } from './contract';
-export type WifiPoint = { time: number; wifi: Wifi | null; breakBefore: boolean };
+export type WifiPoint = { time: number; observedAt?: string; wifi: Wifi | null; breakBefore: boolean };
 // Only actual native observations enter this bounded history, even while the tab is unmounted.
 export class WifiHistory {
   points: WifiPoint[] = [];
@@ -15,7 +15,7 @@ export class WifiHistory {
     const wifi = s.network.details?.wifi ?? null;
     const previous = this.points.at(-1);
     const changedBss = !!(wifi?.bssid && previous?.wifi?.bssid && wifi.bssid !== previous.wifi.bssid);
-    this.points.push({ time, wifi, breakBefore: changedBss || !!previous && time - previous.time > 2200 });
+    this.points.push({ time, observedAt: s.network.observedAt, wifi, breakBefore: changedBss || !!previous && time - previous.time > 2200 });
     this.points = this.points.slice(-600);
   }
 }
