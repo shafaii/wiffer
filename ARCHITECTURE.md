@@ -1,4 +1,4 @@
-# Wiffer M0.8.1 architecture
+# Wiffer architecture
 
 M0.8 extends the verified M0.7 WPF + WebView2 + React application with a read-only Wi-Fi Lab. The native ICMP lifecycle remains in place. There is no packet inspection, recording database, automatic speed test, cloud account, or M1 implementation.
 
@@ -22,7 +22,7 @@ Integer subtraction occurs before floating-point conversion. The displayed unit 
 
 Each sample includes a strictly increasing sequence number, UTC completion timestamp, measured monotonic interval, status, raw instantaneous speeds, short averages, and optional explanation. Wall-clock adjustment does not change speed mathematics. A new/replaced adapter, pause/resume, negative/reset/wrapped counters, nonpositive interval, or interval over two seconds produces a null `baseline` sample. Read failures produce null `unavailable` samples and discard the baseline. Recovery requires a new baseline. Idle valid counters produce genuine zero. Positive speeds are not arbitrarily clamped.
 
-The approximately 3-second average weights each observed rate by its measured interval. It retains whole intervals until dropping the oldest would leave less than three seconds, with an additional hard bound of 64 intervals. Instantaneous numbers are never smoothed. Digital illuminated arcs use an exact critically damped spring (angular frequency 19/s) integrated at requestAnimationFrame cadence, carrying velocity between samples and honoring reduced-motion preferences. Static SVG layers provide extruded depth, precision edge lighting and glass reflection. Only arc position/trail is animated; numbers are exact, missing values remain dashes, and no synthetic measurement enters history. Automatic ranges start at 100 Mbps, grow by powers of ten when exceeded, and never shrink during the mounted instrument view. Fixed 10/100/1000/10000 Mbps ranges are available; an above-scale numeric value remains uncapped.
+The approximately 3-second average weights each observed rate by its measured interval. It retains whole intervals until dropping the oldest would leave less than three seconds, with an additional hard bound of 64 intervals. The readouts format the latest native rates and weighted averages to two decimal places. Missing values appear as dashes and valid zero appears as 0.00. The status pill and last sample time identify retained values when monitoring is inactive.
 
 `TrafficMonitor` owns a bounded 1204-sample queue (approximately five minutes at 4 Hz), a generation number for clear/reset, and delta-batch reads by sequence. The traffic worker joins the existing engine's worker set, so pause, reset, route changes, settings and shutdown cancel and await it alongside the probe workers. Reconnection to the same route preserves a visible history gap; route/adapter replacement clears histories. Native sampling runs in background tasks independently of rendering.
 
@@ -47,7 +47,7 @@ Sent means completed measurements. Loss is `(timeouts + errors) / sent * 100`; f
 
 ## Presentation and data flow
 
-The cockpit has two measured digital traffic instruments, a distinct path-response readout, six shared-grid instruments, and expandable connection/statistics sections. Imported records remain the original six summaries on a separate non-live page, without invented dates or reconstructed samples. Fonts are Windows system fonts; assets are local.
+The cockpit has paired SVG download and upload gauges in a Local PC traffic card, a separate Path response card, six shared-grid instruments, and expandable connection/statistics sections. Both gauges share six tick values from 0 to 100 Mbps at the base scale. The scale increases by powers of ten to fit the highest measured rate from either direction in the last 30 seconds of native sample time. Gauge angle and arc fill are linear between adjacent printed ticks. Motion applies to the SVG indicators only. Imported records are the six original summaries on a separate non-live page. Fonts are Windows system fonts and assets are local.
 
 The six instruments are gateway RTT, external RTT, 10-second rolling RTT variation, packet-loss event lanes, download history and upload history. All share the selected 60/300-second time domain and linked ECharts hover inspection. Failure diamonds have no RTT. Packet-loss lanes show dim successful-reply ticks and coral failures, with combined rolling loss and completed-probe count. Throughput plots are unsmoothed. A selected chart expands in place, retaining its ECharts instance; Escape collapses it.
 
@@ -60,7 +60,7 @@ f(r) = 60 + 20 log2(r / 30)       for r > 30
 
 Axes label the inverse mapping; hover displays raw precision. The ordinary 0–30 ms band is retained with adaptive headroom. A linear option is available. Probe gaps above 1.8 seconds and throughput gaps above one second explicitly break traces. Failed probe values remain null. Chart variation uses a rolling 10-second successful-reply window; this is deliberately distinguished from the selected-window summary variation.
 
-The host sends a probe/connection snapshot at 1 Hz and new traffic samples on acquisition completion at approximately 4 Hz. A single pending dispatcher callback coalesces notifications; the 250 ms timer remains a fallback, not the primary delivery gate. A bounded external React store deduplicates sequences and resets on generation changes. Only the digital-instrument subtree subscribes at traffic frequency; the main cockpit and chart histories update on the 1 Hz snapshot. Six canvas instances are initialized once, updated using stable series IDs, resized by ResizeObserver, and disposed on unmount. There is no continuous chart animation or sample smoothing. Normal GPU/compositor rendering is enabled by WebView2 defaults; no software-rendering flag is added. The on-demand 30-second frame check measures rAF intervals and estimates missed refresh opportunities relative to the observed median. It does not measure GPU presentation or establish a sustained FPS guarantee.
+The host sends probe/connection snapshots around 1 Hz and new traffic samples on acquisition completion at approximately 4 Hz. A single pending dispatcher callback coalesces traffic notifications and the 250 ms timer provides fallback delivery. A bounded external React store deduplicates sequences and resets on generation changes. The traffic card subscribes at traffic frequency in Instruments. The main cockpit and chart histories update on the snapshot. Six canvas instances are initialized once, updated using stable series IDs, resized by ResizeObserver, and disposed on unmount. Normal GPU/compositor rendering uses WebView2 defaults. The on-demand 30-second frame check measures rAF intervals and estimates missed refresh opportunities relative to the observed median. GPU presentation is outside the scope of those measurements.
 
 ## Versioned bridge and security
 
@@ -74,6 +74,8 @@ The WPF host still maps only packaged `wwwroot` to `https://wiffer.local`. Sourc
 
 See HANDOFF.md for actual observations, evidence, limitations and exact build commands.
 
+The traffic gauges were checked against native batch values and timestamps in WebView2 at 1366×768 and 1920×1080. All six history charts fit at both sizes. At 850×650 the cards stack. See HANDOFF.md for the lifecycle checks and validation scope.
+
 ## API references
 
 - https://learn.microsoft.com/en-us/windows/win32/api/netioapi/ns-netioapi-mib_if_row2
@@ -86,7 +88,7 @@ See HANDOFF.md for actual observations, evidence, limitations and exact build co
 
 ## M0.7 presentation and packaging
 
-Wiffer adds an original local SVG detective mark, multi-resolution ICO, sky/glacier signal accents, a midnight graphite chassis and angular layered SVG digital instruments. Spring motion remains display-only; all numbers and histories retain M0.5 semantics. Installed Windows UI and monospace fonts are used without redistribution. The executable/product is Wiffer; internal PulseDeck solution and Core project names remain to avoid unrelated refactoring. The local profile uses the Wiffer application-data directory.
+The M0.7 release introduced the local SVG detective mark, multi-resolution ICO, sky/glacier signal accents, a midnight graphite chassis and angular layered SVG gauges. Spring motion in that release affected display only. Installed Windows UI and monospace fonts are used without redistribution. The executable/product is Wiffer. Internal solution and Core project names use PulseDeck. The local profile uses the Wiffer application-data directory.
 
 Public captures mask identifiers without modifying measurements. Old local evidence and earlier history are excluded from the public root commit. A self-contained x64 ZIP contains runtime files, frontend assets and licenses; WebView2 Evergreen remains a separate prerequisite. The per-user shortcut targets a stable installation directory and remains valid when copied.
 
@@ -108,9 +110,9 @@ Endpoint reference verified 2026-10-19: https://github.com/cloudflare/speedtest 
 
 The bounded diagnostics window retains at most 1204 observations per metric: native interval/read duration, sample completion → host send, host send → JS receipt (same-machine wall-clock estimate), JS receipt → next rAF, and batch/sample sequence gaps. Probe completion cadence is computed from actual recent timestamps and is affected by timeouts and pause gaps. Histories and raw UTC timestamps are unchanged; canceled pre-enqueue traffic reads do not consume sequence numbers.
 
-Chart updates remain at the 1 Hz snapshot rate with stable ECharts instances and series IDs. The traffic history copy is memoized per snapshot, avoiding unnecessary copies on unrelated UI state updates. Digital animation and test progress subscribe independently, and no chart interpolates missing samples. WebView2 hardware acceleration remains at its default; there is no heavy 3D library or continuous idle animation loop.
+Chart updates remain at the snapshot rate with stable ECharts instances and series IDs. The full traffic history for those charts is memoized per snapshot. The traffic card derives its shared scale from the same bounded store as batches arrive. Speed-test progress subscribes separately. WebView2 hardware acceleration uses its default settings.
 
-`scripts/benchmarks` measures real providers at increasing bounded rates, includes 20 comparisons of direct counters bracketed by managed API reads, and keeps public ICMP at 1 Hz. `scripts/benchmark-webview.cjs` records 30-second native/bridge/rAF observations at both viewports. `scripts/verify-speedtest.cjs` explicitly consumes test traffic; it verifies cancellation, completion, byte limits and reduced-motion/scale UI behavior. `scripts/verify-diagnostics.cjs` checks the inspector and captures diagnostics without publishing identifiers. See HANDOFF.md for measured results and limitations.
+`scripts/benchmarks` measures real providers at increasing bounded rates, includes 20 comparisons of direct counters bracketed by managed API reads, and keeps public ICMP at 1 Hz. `scripts/benchmark-webview.cjs` records 30-second native/bridge/rAF observations at both viewports. `scripts/verify-speedtest.cjs` explicitly consumes test traffic to verify cancellation, completion and byte limits. `scripts/verify-diagnostics.cjs` checks the inspector and captures diagnostics without publishing identifiers. See HANDOFF.md for measured results and limitations.
 
 
 ## M0.8 Wi-Fi Lab data and rendering
@@ -156,3 +158,13 @@ Supersedes the decorative Signal Field and earlier hero rules. A full-width SVG 
 MonitorEngine raises NetworkObserved after committing a serialized refresh and releasing its lifecycle gate. The host coalesces notifications on its dispatcher and sends the existing bridge-v2 snapshot. The 250 ms timer sends a fallback snapshot after at least 1250 ms without delivery. Polling frequency, synchronous native-query behavior, UTC completion time, monotonic elapsed timing, traffic batches and history capacities are unchanged. No overlapping reads or new bridge message type.
 
 Observed validation: 35 frontend and 71 native tests pass, plus TypeScript, production and Release builds. Native checks cover both viewports, exact readings/timestamps, hover/pan/zoom/pin/Live, keyboard controls, pause/resume, four stable charts and reduced motion. Isolated fixtures cover states/missing fields and emulated pinch; these are not hardware tests. See HANDOFF.md for screenshots, measured delivery/frame timing and remaining limitations. User explicitly authorized committing/pushing M0.8.3 on 2026-10-23; no release, installation replacement, band switching or M1. Stop after M0.8.3.
+
+## M0.8.4 hero presentation
+
+`KineticFabric.tsx` replaces only the main Wi-Fi Lab hero. The four historical ECharts instances, their linked tooltips and 60/300-second controls remain. Previous hero timeline navigation is intentionally replaced with local fabric manipulation. Native collectors, bridge v2, acquisition-triggered snapshots and traffic histories are unchanged.
+
+`fabricModel.ts` maps quality linearly to a display factor, builds deterministic asymmetric ribbon surfaces, and gates local RX/TX presentation on measured samples no older than 1200 ms. A bounded log1p(Mbps)/log(101) mapping sets seam speed and opacity; it is neither internet capacity nor a signal-strength estimate. Pale RX flows left and muted blue TX right. No RTT deformation or ambient motion. RSSI remains a separate exact reading. Inactive readings are suppressed, and missing quality does not suppress independently available RSSI.
+
+One requestAnimationFrame loop uses the existing critically damped spring for quality and local displacement. Geometry is cached across traffic-only frames. Pointer capture supports mouse/touch pulls; release, cancel, blur and visibility reset displacement. Arrow keys provide a keyboard pull. Reduced motion snaps to quality, uses quarter-size direct interaction and holds traffic seam phases static. Hidden pages cancel rendering. No React state updates per animation frame and no new dependency.
+
+M0.8.4 validation: 39 frontend / 71 native tests and required checks/builds pass; actual two-viewport WebView2 captures, pointer drag/recovery, reduced motion, native values/timestamps and traffic motion pass. Isolated quality/state/traffic/touch fixtures supplement native checks. No GPU presentation, sustained frame-rate, CPU/battery or physical touchscreen claim is established.

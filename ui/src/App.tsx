@@ -1,7 +1,7 @@
 import { WifiLab } from './WifiLab';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { InstrumentChart, instruments, type Instrument } from './InstrumentChart';
-import { TrafficDeck } from './SpeedDial';
+import { TrafficDeck } from './TrafficDeck';
 import { trafficStore } from './trafficStore';
 import { SpeedTest } from './SpeedTest';
 import { TelemetryDiagnostics } from './TelemetryDiagnostics';
@@ -21,7 +21,7 @@ function Latest({ endpoint, color, now, inactive }: { endpoint?: Endpoint; color
   const sample = endpoint?.samples.at(-1);
   const stale = sample && now && Date.parse(now) - Date.parse(sample.timestamp) > 4500;
   return <div className={`hero-reading ${color} ${inactive || stale ? 'muted-reading' : ''}`}>
-    <div className="eyebrow"><span className="trace-dot" />{endpoint?.id === 'gateway' || color === 'gateway' ? 'GATEWAY' : 'INTERNET'}<span className="target">{endpoint?.target ?? 'Not detected'}</span></div>
+    <div className="eyebrow"><span className="trace-dot" />{color === 'gateway' ? 'Gateway' : 'Internet'}<span className="target">{endpoint?.target ?? 'Not detected'}</span></div>
     <div className="reading"><span>{sample?.status === 'success' ? number(sample.rttMs) : '—'}</span><span className="unit">ms</span>
       <span className={`reading-status ${sample && sample.status !== 'success' ? 'coral' : ''}`}>{!sample ? 'Awaiting reply' : sample.status === 'timeout' ? 'Timed out' : sample.status === 'error' ? 'Probe error' : inactive ? 'Last reply' : stale ? 'Waiting for reply' : 'Latest reply'}</span>
     </div>
@@ -109,9 +109,10 @@ export function App() {
   const connected = snapshot?.network.connected;
   const inactive = !snapshot || snapshot.paused || !connected || stale;
   const state = !snapshot ? 'Awaiting desktop' : stale ? 'Host connection lost' : snapshot.paused ? 'Paused' : snapshot.network.error ? 'Detection unavailable' : !connected ? 'Disconnected' : 'Monitoring';
+  const trafficInactiveReason = inactive ? state : !snapshot.network.adapterId ? 'Interface unavailable' : null;
   useEffect(() => { const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') setExpanded(null); }; window.addEventListener('keydown', escape); return () => window.removeEventListener('keydown', escape); }, []);
   return <div className="app-shell">
-    <header className="topbar"><div className="brand"><img className="brand-icon" src="/wiffer.svg" alt="Wiffer detective mascot" /><span>Wiffer<small>SNIFF OUT YOUR NETWORK PROBLEMS.</small></span><span className="edition">M0.8.3</span></div>
+    <header className="topbar"><div className="brand"><img className="brand-icon" src="/wiffer.svg" alt="Wiffer detective mascot" /><span>Wiffer<small>SNIFF OUT YOUR NETWORK PROBLEMS.</small></span><span className="edition">M0.8.4</span></div>
       <nav aria-label="Main views"><button className={page === 'live' ? 'active' : ''} onClick={() => setPage('live')}>Instruments</button><button className={page === 'wifi' ? 'active' : ''} onClick={() => setPage('wifi')}>Wi-Fi Lab</button><button className={page === 'history' ? 'active' : ''} onClick={() => setPage('history')}>Historical context <span className="count">6</span></button></nav>
       <div className="header-tools"><span className="local-label">ON DEVICE / WINDOWS</span><button aria-label="Measurement settings" disabled={!snapshot} onClick={() => setSettings(true)}><Glyph name="settings" /></button></div>
     </header>
@@ -123,10 +124,10 @@ export function App() {
       <div className="session-strip"><div className="connection-state"><span className={`status-dot ${!inactive ? 'is-live' : ''}`} /><strong>{state}</strong><span>{snapshot?.network.adapterName ?? 'Native instrumentation'}</span><span className="strip-path">{snapshot?.gateway.target ?? 'Gateway unknown'} <i>→</i> {snapshot?.internet.target ?? '1.1.1.1'}</span></div>
         <div className="session-actions"><span className="session-clock">{elapsed(snapshot?.runningSeconds ?? 0)}<small>ACTIVE TIME</small></span><button className="test-speed" disabled={!snapshot || stale} onClick={() => setSpeedOpen(true)}>↗ Test Speed</button><button disabled={!snapshot || pending || stale} onClick={() => command(snapshot?.paused ? 'resume' : 'pause')}><Glyph name={snapshot?.paused ? 'play' : 'pause'} />{snapshot?.paused ? 'Resume' : 'Pause'}</button><button disabled={!snapshot || pending || stale} onClick={() => command('reset')}><Glyph name="reset" />Reset</button></div>
       </div>
-      {page === 'wifi' ? <WifiLab snapshot={snapshot} stale={stale}/> : <><div className="cockpit"><TrafficDeck inactive={inactive || !snapshot?.network.adapterId} state={!snapshot?.network.adapterId && snapshot ? 'Interface unavailable' : state} /><section className="signal-deck"><div className="instrument-bar"><span>PATH RESPONSE</span><span>NATIVE ICMP / ~1 Hz</span></div>
+      {page === 'wifi' ? <WifiLab snapshot={snapshot} stale={stale}/> : <><div className="cockpit"><TrafficDeck inactiveReason={trafficInactiveReason} /><section className="signal-deck" aria-labelledby="path-response-heading"><div className="cockpit-heading"><div><h2 id="path-response-heading">Path response</h2><p>Gateway and internet latency</p></div></div>
         <div className="signal-readings"><Latest endpoint={snapshot?.gateway} color="gateway" now={snapshot?.now} inactive={inactive} /><Latest endpoint={snapshot?.internet} color="internet" now={snapshot?.now} inactive={inactive} /></div>
         <div className="path-stats">{(['gateway', 'internet'] as const).map(id => { const e = snapshot?.[id], m = seconds === 60 ? e?.stats60 : e?.stats300; return <div key={id}><span>{id === 'gateway' ? 'GW' : 'EXT'} <small>{seconds}s</small></span><span>AVG <b>{number(m?.average)}<small>ms</small></b></span><span>P95 <b>{number(m?.p95)}<small>ms</small></b></span><span>LOSS <b className={(m?.lossPercent ?? 0) > 0 ? 'coral' : ''}>{number(m?.lossPercent)}<small>%</small></b></span></div>; })}</div>
-        <div className="signal-caption">Two independent endpoints. Spikes are observations, not diagnoses.</div>
+        <div className="signal-caption">Native ICMP · ~1 Hz per endpoint</div>
       </section></div>
       <section className="scope-bank"><div className="scope-toolbar"><div><h2>Signal history</h2><span>SYNCHRONIZED INSTRUMENTS</span></div><div className="chart-controls"><button className="scale-toggle" onClick={() => setFocus(!focus)}>{focus ? 'RTT focus scale¹' : 'RTT linear scale'}</button><div className="segmented" aria-label="Shared chart time window">{[60, 300].map(s => <button key={s} aria-pressed={seconds === s} className={seconds === s ? 'selected' : ''} onClick={() => setSeconds(s)}>{s === 60 ? '60 seconds' : '5 minutes'}</button>)}</div></div></div>
         {expanded && <div className="inspector-backdrop" onClick={() => setExpanded(null)} />}
@@ -136,7 +137,7 @@ export function App() {
       <ConnectionInspector snapshot={snapshot} />
       <details className="measurement-details"><summary>Rolling statistics & measurement notes</summary><div className="metrics-table"><div className="metric-row table-head"><span>ENDPOINT</span><span>MIN</span><span>AVG</span><span>MAX</span><span>MEDIAN</span><span>P95</span><span>VARIATION</span><span>LOSS</span></div>{snapshot && <><MetricRow endpoint={snapshot.gateway} seconds={seconds} /><MetricRow endpoint={snapshot.internet} seconds={seconds} /></>}</div>
         <p>Loss = (timeouts + transport errors) ÷ completed probes. Canceled probes and disconnected intervals are not loss. RTT statistics use successes only; P95 uses nearest rank. Summary variation uses successive successful RTTs within the selected window; the chart uses a 10-second window and skips failures. Missing replies break traces.</p>
-        <p>Speeds = byte-counter delta × 8 ÷ monotonic elapsed seconds ÷ 1,000,000. This is total traffic through the selected physical interface, including LAN traffic. The short average is time-weighted over approximately 3 seconds. Auto arc ranges only grow during this view; select a fixed range for comparisons. Numbers are measured; only the illuminated arcs use spring motion. No speed tests run automatically.</p><TelemetryDiagnostics snapshot={snapshot}/><FrameCheck />
+        <p>Speeds = byte-counter delta × 8 ÷ monotonic elapsed seconds ÷ 1,000,000. This is total traffic through the selected physical interface, including LAN traffic. The short average is time-weighted over approximately 3 seconds. Both gauges use the same adaptive scale. Each marked interval covers a different range of Mbps. The range grows to accommodate recent traffic bursts. Use Test Speed to measure internet throughput on demand.</p><TelemetryDiagnostics snapshot={snapshot}/><FrameCheck />
       </details>
     </>}</main>}
     <footer><span><span className="tiny-dot" /> LOCAL MEASUREMENTS <i>/</i> ICMP ~1 Hz <i>/</i> TRAFFIC ~4 Hz <i>/</i> {snapshot?.settings.timeoutMs ?? 2500} ms timeout</span><span>Wiffer <b>0.8</b></span></footer>

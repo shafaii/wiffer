@@ -4,7 +4,7 @@ import { LineChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { Snapshot } from './contract';
-import { SignalSurface } from './SignalSurface';
+import { KineticFabric } from './KineticFabric';
 import { liveView, windowEnd } from './surfaceModel';
 import { labActive, labState, wifiHistory, wifiSeries, type WifiPoint } from './wifiModel';
 import './wifiLab.css';
@@ -59,17 +59,14 @@ export function WifiLab({ snapshot, stale }: { snapshot: Snapshot | null; stale:
   const rows = [['Adapter', snapshot?.network.adapterName], ['SSID', wifi?.ssid], ['BSSID', wifi?.bssid], ['Adapter MAC', wifi?.mac], ['Band', wifi?.band], ['Channel', wifi?.channel], ['Radio type', wifi?.radioType], ['Authentication', wifi?.authentication], ['Cipher', wifi?.cipher], ['Connection mode', wifi?.connectionMode], ['Native state', wifi?.state], ['Observation (UTC)', at], ['RSSI (dBm)', wifi?.rssiDbm], ['Reported quality (%)', wifi?.signalQuality], ['Negotiated RX (Mbps)', wifi?.rxLinkMbps], ['Negotiated TX (Mbps)', wifi?.txLinkMbps], ['Gateway RTT (ms)', snapshot?.gateway.samples.at(-1)?.rttMs]];
   return <section className={`wifi-lab ${active ? 'lab-live' : 'lab-inactive'} ${state === 'Degraded' || state === 'Weakening' ? 'lab-warning' : ''}`} data-state={state}>
     <article className="lab-hero" data-observed-at={at ?? ''} data-band={active ? wifi?.band ?? '' : ''}>
-      <SignalSurface points={points} wifi={wifi} active={active} state={state} end={end} seconds={seconds} live={view.end===null} pinned={view.pinned}
-        onView={(next, span)=>{setView(v=>({...v,end:next,seconds:span}));}}
-        onInspect={setSelected} onPin={time=>{setView(v=>({...v,pinned:time,end}));setSelected(time);}}
-        onLive={()=>{setView(v=>({...v,end:null,pinned:null}));setSelected(null);}}/>
+      <KineticFabric wifi={wifi} active={active} state={state}/>
     </article>
     <div className="lab-history-heading"><h2>History</h2><div className="segmented" aria-label="Wi-Fi history window">{[60,300].map(n=><button key={n} aria-pressed={seconds===n} className={seconds===n?'selected':''} onClick={()=>setView(v=>({...v,seconds:n}))}>{n===60?'60 seconds':'5 minutes'}</button>)}</div></div>
     <div className="lab-charts">{chartNames.map((_,kind)=><LabChart key={kind} kind={kind} points={points} snapshot={snapshot} seconds={seconds} end={end} selected={selected}/>)}</div>
     <details className="connection-inspector lab-inspector"><summary><span>TECHNICAL INSPECTOR <b>Native Windows Wi-Fi</b></span><span>ASSOCIATION & MEASUREMENT NOTES <i>＋</i></span></summary><dl>{rows.map(([label,value])=><div key={label}><dt>{label}</dt><dd>{value ?? 'Unavailable'}</dd></div>)}</dl>
       {wifi?.unavailableReason && <p className="amber">{wifi.unavailableReason}</p>}<p>{snapshot?.network.details?.selection ?? 'No selected Wi-Fi adapter.'} · Gateway ICMP follows Windows routing and may include other path effects. Gateway replies keep their own completion timestamps; they are not atomic with radio queries.</p>
-      <p>The surface plots actual native completion times against driver-reported quality (0–100%). Layered lighting follows the same measured trace; it is not additional telemetry. RSSI remains a separate dBm reading. Hover or pin to inspect exact observations; drag horizontally to navigate, wheel or pinch to zoom between 60 and 300 seconds. Arrow keys inspect, Enter pins, Escape returns to Live. Gateway ICMP tooltips retain their own timestamps; nearby replies are not simultaneous radio observations.</p>
-      <p>Older than 3.5 seconds is stale. Pausing freezes acquisition. History is bounded to 600 observations, with gaps for missing fields, missed polls and detected BSSID changes. Animation translates the time window only; inspected values never interpolate. Degraded means RSSI below −75 dBm or quality below 40%; weakening means a 4 dB fall over 2–4.5 seconds. These display thresholds do not identify a cause. No distance, interference, SNR or retries are inferred.</p>
+      <p>The fabric is a presentation surface, not a graph. Quality / 100 controls illumination and fullness; RSSI remains exact and independent. Drag or use arrow keys to locally stretch the silk; release to recover. Two moving seams show measured local interface traffic: pale RX travels left, blue TX travels right. Motion uses a bounded logarithmic response, not an internet-capacity scale. There is no ambient motion or RTT deformation. Reduced motion keeps direct, smaller displacement and static traffic highlights.</p>
+      <p>Older than 3.5 seconds is stale. Pausing freezes acquisition. History is bounded to 600 observations, with gaps for missing fields, missed polls and detected BSSID changes. Fabric springs affect presentation only; numerical readings never interpolate. Degraded means RSSI below −75 dBm or quality below 40%; weakening means a 4 dB fall over 2–4.5 seconds. These display thresholds do not identify a cause. No distance, interference, SNR or retries are inferred.</p>
     </details>
   </section>;
 }

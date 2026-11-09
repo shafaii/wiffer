@@ -23,7 +23,4 @@ await page.screenshot({path:'artifacts/validation/speedtest-live.png'});
 console.log(JSON.stringify({cancelMs,final}));
 assert.equal(final.status,'complete');assert.ok(final.downloadMbps>0&&final.uploadMbps>0);assert.ok(final.downloadBytes<=256e6&&final.uploadBytes<=128e6);
 await page.getByRole('button',{name:'Close speed test',exact:true}).click();
-await page.emulateMedia({reducedMotion:'reduce'});await page.getByLabel('Throughput dial range').selectOption('10');await page.waitForTimeout(400);
-assert.equal(await page.locator('.digital-instrument').count(),2);assert.equal(await page.locator('.dial-needle').count(),0);
-await page.getByLabel('Throughput dial range').selectOption('0');await page.emulateMedia({reducedMotion:'no-preference'});
 process.exit(0);})().catch(e=>{console.error(e);process.exit(1)});

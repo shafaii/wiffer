@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Wifi } from './contract';
-import { springStep } from './SpeedDial';
+import { springStep } from './motion';
 import type { WifiPoint } from './wifiModel';
 import { nearestObservation, panWindow, qualitySegments, qualityY, zoomWindow } from './surfaceModel';
 import './signalSurface.css';

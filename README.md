@@ -4,7 +4,7 @@
 
 **Wiffer — Sniff out your network problems.**
 
-A local Windows network instrument with digital EV-style instruments, synchronized signal histories and honest measurements. Follow your gateway and internet response times alongside the traffic actually passing through your PC.
+A local Windows network instrument with live traffic readouts and synchronized signal histories. Follow your gateway and internet response times alongside the traffic actually passing through your PC.
 
 ## Wi-Fi Lab · Live Signal Surface (M0.8.3)
 
@@ -38,9 +38,9 @@ Copy-Item "$env:LOCALAPPDATA\Programs\Wiffer\Wiffer.lnk" ([Environment]::GetFold
 
 ![Wiffer running with real native measurements at 1920×1080](docs/screenshots/viewport-1920x1080.png)
 
-Actual WPF/WebView2 application capture. Solid masks conceal network identifiers; chart values and traffic readings are real, unmodified observations. No synthetic telemetry or replay is used. [Compact 1366×768 capture](docs/screenshots/viewport-1366x768.png).
+Actual WPF/WebView2 capture of the published M0.7 cockpit. Solid masks conceal network identifiers. Chart values and traffic readings are real observations. [Compact 1366×768 capture](docs/screenshots/viewport-1366x768.png).
 
-- **Digital cockpit:** midnight graphite, sky/glacier blue and icy white; angular instruments with layered depth, illuminated spring-driven arcs, exact instantaneous Mbps and separate weighted averages. Dynamic ranges and reduced-motion support.
+- **Local PC traffic in the current source build.** Paired download and upload gauges show the latest native Mbps and separate three-second weighted averages. Both dials use the same adaptive scale.
 - **On-demand Quick Speed Test:** explicit, bounded native HTTPS transfers to Cloudflare, live and sustained download/upload, idle/loaded HTTP latency, endpoint details, duration, cancel and clear errors. Warns before loading the connection; never runs automatically.
 - **Measured diagnostics:** native cadence/provider time, sample delivery, frame-callback delay and sequence gaps. Direct adapter counter reads and sample-triggered bridge delivery reduce acquisition and queueing work.
 - **Six synchronized charts:** gateway RTT, external RTT, rolling RTT variation, packet-loss events, download and upload. Shared 60-second/5-minute windows, precise hover inspection and expandable charts.

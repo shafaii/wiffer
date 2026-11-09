@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { TrafficStore } from './trafficStore';
-import { gaugeRange } from './SpeedDial';
+import { gaugePosition, gaugeScale } from './trafficGauge';
 import { trafficPoints, variationPoints } from './instrumentMath';
 import { trafficBatchSchema, trafficSampleSchema, wifiSchema, type TrafficSample } from './contract';
 const sample = (sequence: number, changes = {}): TrafficSample => ({ sequence, timestamp: new Date(1800000000000 + sequence * 250).toISOString(), elapsedSeconds: .25, status: 'measured', downloadMbps: 8, uploadMbps: 1, downloadAverage: 7, uploadAverage: .5, error: null, ...changes });
@@ -37,10 +37,33 @@ describe('native bridge telemetry validation', () => {
     expect(wifiSchema.safeParse({ ...wifi, signalQuality: 101 }).success).toBe(false);
   });
 });
-describe('instrument data mapping', () => {
-  it('never shrinks automatic ranges and handles throughput above 10 Gbps', () => {
-    expect(gaugeRange(0, 1000)).toBe(1000); expect(gaugeRange(1001, 1000)).toBe(10000); expect(gaugeRange(25000, 100)).toBe(100000);
+describe('traffic gauge calibration', () => {
+  it('lands on each labeled tick and interpolates within the printed intervals', () => {
+    const ticks = gaugeScale([]);
+    expect(ticks).toEqual([0, 0.1, 1, 10, 50, 100]);
+    expect(ticks.map(tick => gaugePosition(tick, ticks))).toEqual([0, .2, .4, .6, .8, 1]);
+    expect(gaugePosition(0.05, ticks)).toBeCloseTo(.1);
+    expect(gaugePosition(30, ticks)).toBeCloseTo(.7);
   });
+
+  it('uses either direction’s recent measured peak and releases it when it expires', () => {
+    const burst = sample(1, { uploadMbps: 250 });
+    const missing = sample(120, { status: 'unavailable', downloadMbps: null, uploadMbps: null, downloadAverage: null, uploadAverage: null });
+    expect(gaugeScale([burst, missing])).toEqual([0, 1, 10, 100, 500, 1000]);
+    expect(gaugeScale([burst, missing, sample(122)])).toEqual(gaugeScale([]));
+    expect(gaugeScale([missing])).toEqual(gaugeScale([]));
+  });
+
+  it('extends above multi-gigabit rates and keeps finite bridge values representable', () => {
+    const ticks = gaugeScale([sample(1, { downloadMbps: 15000.25 })]);
+    expect(ticks.at(-1)).toBe(100000);
+    expect(gaugePosition(15000.25, ticks)).toBeGreaterThan(.6);
+    const extremeTicks = gaugeScale([sample(1, { downloadMbps: Number.MAX_VALUE })]);
+    expect(extremeTicks.every(Number.isFinite)).toBe(true);
+    expect(gaugePosition(Number.MAX_VALUE, extremeTicks)).toBe(1);
+  });
+});
+describe('instrument data mapping', () => {
   it('preserves throughput precision and inserts explicit gaps', () => {
     const result = trafficPoints([sample(1, { downloadMbps: 1.23456789 }), sample(10), sample(11, { status: 'unavailable', downloadMbps: null })], 'download');
     expect(result.map(s => s.raw)).toEqual([1.23456789, null, 8, null]);

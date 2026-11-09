@@ -1,3 +1,66 @@
+# Wiffer — Local PC traffic gauges
+
+The Instruments view shows separate download and upload dials with illuminated arcs, calibrated needles, instantaneous native Mbps, and three-second weighted averages. The two gauges use the same adaptive scale. Equal angular intervals map to the printed tick intervals, and a recent burst can temporarily raise the range. The numbers update directly from the native batch and the indicators use short display-only transitions.
+
+The traffic card uses the existing physical-interface samples, timestamps and status. The six longer history charts stay below the traffic and path-response cards. Test Speed retains the explicit Start test control.
+
+TypeScript, 41 frontend tests, 71 native tests, the production frontend build, and the Release solution build passed. The native tests used local testhost IPC. Release built with zero warnings or errors. Vite retained the upstream Zod annotation and bundle-size warnings. Gauge tests cover labeled ticks, interpolation, recent burst expiry, and finite values above 10 Gbps.
+
+Actual WebView2 checks compared native instantaneous and weighted values, sample timestamps, and needle and arc targets. At 1366×768 and 1920×1080, the six history charts end at 761 and 1010 CSS pixels respectively. The cards stack without horizontal overflow at 850×650. Pause retains the last reading. Reset while paused clears the readings and both moving indicators. Resume works under reduced motion. Resizing, expanding a chart and changing time windows preserve six chart instances. The speed-test dialog required explicit start and the Wi-Fi Lab opened with four charts. No page errors were observed.
+
+Local captures and the validation aggregate are under `artifacts/validation/traffic-gauges/`. Checks used this PC’s active connection and WebView2 viewport overrides at device scale 1. Separate Edge fixtures exercised zero, unavailable, paused and above-gigabit samples. The fixtures were isolated from the packaged app. Physical network transitions, high-DPI behavior, and sustained performance were outside these checks. The speed-test dialog was checked without starting a transfer.
+
+Launch the verified development build via `artifacts/Wiffer Latest.lnk`. Its target is `artifacts/traffic-gauge-build/Release/net10.0-windows/Wiffer.exe` with adjacent build files. The stable executable and Desktop shortcut matched their preserved SHA-256 hashes.
+
+---
+
+# Wiffer — Previous Local PC traffic redesign
+
+The Instruments view now opens with two simple download and upload readouts. Each shows the latest native Mbps and the three-second weighted average, with a short trace beneath. The traces cover 30 seconds on a shared zero-based scale and leave gaps for unavailable or interrupted samples. The panel labels LAN and internet traffic, shows the native sample time, and marks inactive readings as the last sample. Path response sits in a separate matching card.
+
+The traffic card derives the traces from the existing bounded native sample store. The six longer history charts use the existing snapshot cadence. The quick speed test keeps its explicit Start test control. The Lab retains Kinetic Signal Fabric and its four history charts.
+
+TypeScript, the production frontend build, 40 frontend tests and 71 native tests passed. The Release solution build passed with zero warnings or errors. The default output executable was locked, so the verified development build uses the separate ignored `artifacts/traffic-redesign-build/Release/net10.0-windows/` directory. Native tests needed local testhost IPC access. Vite reported the existing bundle-size and upstream Zod annotation warnings.
+
+Native WebView2 verified both formatted rates and averages, sample timestamps, and trace endpoints on the shared scale. All six history charts fit at 1366×768 and 1920×1080, ending at 754 and 973 CSS pixels respectively. At 850×650 the cards stack without horizontal overflow. Resize, time-window changes, expansion and pause/resume preserve all six chart instances. Pause freezes the last readings, and resume under reduced motion shows new samples and a trace break. The Speed Test dialog required an explicit start. The Wi-Fi Lab opened with four charts. No page errors were observed.
+
+Local captures and the validation aggregate are under `artifacts/validation/traffic-redesign/`. The checks used this PC’s active connection with WebView2 viewport overrides at device scale 1. Physical network transitions, high-DPI behavior and long-run performance were outside the visual check. The speed-test dialog was checked without starting a transfer.
+
+`artifacts/Wiffer Latest.lnk` resolves to `artifacts/traffic-redesign-build/Release/net10.0-windows/Wiffer.exe`. Keep the adjacent runtime and `wwwroot` files with the executable. The stable executable and Desktop shortcut matched their preserved SHA-256 hashes.
+
+---
+
+# Wiffer M0.8.4 — Kinetic Signal Fabric
+
+Completed 2026-10-23 (America/Toronto). Only the main Wi-Fi hero is replaced. Stop after M0.8.4; no push, release, band switching or M1.
+
+## Delivered
+
+Seven wide layered SVG ribbons form a folded, asymmetric silk surface with glacier highlights, shaded undersides and midnight-blue surroundings. Stable 80% retains dimensional resting geometry. Quality / 100 controls fullness and illumination through display-only springs; quality and RSSI readouts remain exact. Connected/weak, reconnecting, disconnected, stale and paused states use independent lighting, contour and status treatments. Missing readings remain unavailable.
+
+Pointer hover gently displaces the surface. Captured mouse/touch dragging pulls a local region with bounded elastic resistance; releasing restores the exact resting shape. Arrow keys also pull and release. Reduced motion remains interactive with smaller direct displacement and no spring travel. There is no ambient loop or synthetic signal variation.
+
+Existing fresh measured local-interface RX/TX samples move only two designated seams: pale RX left, muted blue TX right. Speed/opacity use bounded log1p(Mbps)/log(101), not an internet-capacity or Wi-Fi-rate scale. Baseline, unavailable, expired and inactive samples suppress traffic highlights. Reduced motion holds highlights static. No RTT deformation was added. Geometry is cached during traffic-only frames; animation stops when idle or hidden.
+
+The four history charts, shared history window buttons, inspector, monitoring, speed test and native/bridge semantics remain. Hero timeline navigation is replaced by tactile manipulation as requested. No new runtime dependency.
+
+## Verification and visual review
+
+39 frontend / 71 native tests pass, with TypeScript, production frontend build and Release solution build (zero warnings/errors). Existing Vite size and upstream Zod annotation warnings remain. Sandboxed Edge/testhost IPC was unavailable; checks passed with local process access enabled.
+
+Actual development WebView2 checks at 1366×768 and 1920×1080 passed exact native quality/RSSI and observation timestamp agreement, full-width layout, mouse drag/release/exact spring recovery, genuine local traffic seam motion, pause/resume, live reduced-motion changes, four stable chart instances and all 17 inspector fields. Chart bottoms are 701/1001 px. No page errors or horizontal overflow. Both final viewport captures and a drag capture were visually inspected: the folded material fills the hero and all four charts fit. This is a visual review, not a claim of GPU frame presentation or a performance benchmark.
+
+Isolated production-component fixtures verify 20%, 50%, 80%, 100%, disconnected, stale, reconnecting and independent missing fields. Stable 80% was visually inspected. Separate traffic fixtures prove traffic changes only seam motion, not ribbon geometry, and suppress expired data. Mouse recovery, reduced-motion interaction and CDP-emulated touch dragging pass. Fixtures are labeled and never loaded by the packaged application or injected into its bridge.
+
+The original M0.8.4 captures and validation aggregates are local evidence under `docs/screenshots/m084-*`. The local `scripts/verify-kinetic-fabric.cjs` and `scripts/verify-kinetic-states.cjs` harnesses use the optional Playwright runtime for native WebView2 and isolated browser checks.
+
+## Local delivery and limitations
+
+The original M0.8.4 build ran from `src/PulseDeck.Windows/bin/Release/net10.0-windows/Wiffer.exe` with its adjacent build files. The stable installation, Desktop shortcuts and earlier milestone evidence were preserved.
+
+Physical touchscreen, physical disconnect/reconnect/roaming, high-DPI, second-PC, CPU/battery and long-soak performance remain unverified. Native synchronous-query limitations are unchanged. No bandwidth-consuming speed test was initiated. The verification uses actual normal local traffic; no new collector or synthetic live telemetry was added.
+
+---
 # Wiffer M0.8.3 — Live Signal Surface
 
 Completed 2026-10-23 (America/Toronto). This section supersedes the decorative Signal Field. Stop after M0.8.3; no M1, band switching, release or stable installation changes. Source commit/push is explicitly authorized by the user's resume request.

@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
-import { springStep } from './SpeedDial';
+import { springStep } from './motion';
 import { TelemetryMetrics } from './TelemetryDiagnostics';
 import { messageSchema, speedTestSchema } from './contract';
-describe('digital instrument motion', () => {
+describe('display spring motion', () => {
   it('converges at 60/120/240 Hz with comparable physical timing', () => {
     const positions = [60, 120, 240].map(hz => {
       let state = { position: 0, velocity: 0 };

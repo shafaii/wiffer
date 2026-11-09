@@ -1,3 +1,4 @@
+// Historical smoke check for the packaged M0.7 release and its gauge controls.
 const {chromium}=require(process.env.WIFFER_PLAYWRIGHT||'playwright'),assert=require('assert/strict'),fs=require('fs');
 (async()=>{const browser=await chromium.connectOverCDP('http://127.0.0.1:9223');const page=browser.contexts().flatMap(c=>c.pages()).find(p=>p.url().startsWith('https://wiffer.local/'));assert.ok(page);const errors=[];page.on('pageerror',e=>errors.push(e.message));
 assert.equal(await page.locator('.digital-instrument').count(),2);assert.equal(await page.locator('.instrument-canvas').count(),6);assert.equal(await page.locator('.dial-needle').count(),0);
